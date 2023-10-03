@@ -1,1 +1,40 @@
-notes!
+1st Meeting - Tuesday 3rd, 2023
+
+Some tasks discussed:
+
+Task 1. Users 
+  - class and children - Inheritance
+  - User permissions
+
+Task 2. Log-in/Sign-in
+  - input of card info when creating an account (money)
+  - Email
+  - username
+  - Temporary Password
+
+Task 3. Profile 
+
+Task 4. Messages
+
+Task 5. Filter search bar
+  - Tags
+  - @username
+
+Creative Feature Ideas:
+- Bookmarks
+- Blue Check: Pay subscription
+- Retweeting 
+-------------------------------------------------------------------------------
+To-Do
+- Review/Study Python
+  Recources: 1. https://www.w3schools.com/python/default.asp
+             2. https://www.freecodecamp.org/news/python-programming-course/
+
+- Familiarize yourself with Tkinter
+- Familiarize with Git
+- Read Requirement Drafts again -> Choose a task that you would like to do.
+
+
+Next Meeting: Members pick a task.
+
+
