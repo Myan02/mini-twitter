@@ -38,3 +38,18 @@ To-Do
 Next Meeting: Members pick a task.
 
 
+FRONTEND:
+1) Create the Profile Creation Page
+    - Make sure its an html form that allows user to input their information
+    - Information includes: name, username/tag unique, password, birthday, type of user, billing info  (bank number unique, amount of money currently)
+    - *Optional* look into jinja2 documentation to see how to create webpages by using a base page (let Michael know if confusing!)
+
+
+BACKEND:
+1) Set up Database Management System
+  - Select either MySQL, PosteGres, SQLAlchemy (python), SQLite (Python)
+
+2) Connect flask web app to the System
+
+3) Create tables and eliminate redundancies
+
