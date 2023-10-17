@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, request, session, flash
-from table_info import profiles
+from table_info import profiles, posts
 from db import db
 
 from datetime import timedelta, datetime
