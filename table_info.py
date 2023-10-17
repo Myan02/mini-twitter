@@ -25,6 +25,7 @@ class posts(db.Model):
    _id = db.Column('id', db.Integer, primary_key=True)
    content = db.Column(db.Text, nullable=False)
    time_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+   user_id = db.Column(db.Integer, db.ForeignKey('profiles.id'), nullable=False)
    
    def __init__(self, content):
       self.content = content

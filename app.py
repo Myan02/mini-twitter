@@ -115,7 +115,7 @@ app = Flask(__name__)
 app.secret_key = 'key'
 app.permanent_session_lifetime = timedelta(minutes=5)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///profiles.sqlite3'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
