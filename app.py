@@ -1,116 +1,10 @@
 from flask import Flask, render_template, url_for, redirect, request, session, flash
 from table_info import profiles, posts, table_event
 from db import db
-from sqlalchemy.orm import load_only
 
 from datetime import timedelta, datetime
 
-# # create an instance of a flask web app and store it in app
-# app = Flask(__name__)
-
-# # create a secret key value to allow POST methods for safe data retrieval
-# app.secret_key = 'key'
-
-# # configure app for SQLAlchemy
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.sqlite3'
-# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# # set the time data is kept in the server session to 5 minutes
-# app.permanent_session_lifetime = timedelta(minutes = 5)
-
-# db = SQLAlchemy(app)
-
-# class users(db.Model):
-#    _id = db.Column('id', db.Integer, primary_key = True)
-#    name = db.Column(db.String(64))
-#    email = db.Column(db.String(128))
-   
-#    def __init__(self, name, email):
-#       self.name = name
-#       self.email = email
-
-# # route to the home page
-# @app.route('/')
-# def home():
-#    return render_template('index.html')
-
-# @app.route('/view')
-# def view():
-#    return render_template('view.html', values=users.query.all())
-
-# # route to the profile page
-# @app.route('/profile')
-# def profile():
-#    return render_template('profile.html')
-
-# # route to the login page and get user info through POST
-# @app.route('/login', methods=["GET", "POST"])
-# def login():
-#    # if we are submitting information from the form: create a session and redirect to the user page
-#    if request.method == 'POST':
-#       session.permanent = True      # make the 5 minute sessions true
-#       user = request.form['un']     # get the value from the text form and store it in user
-#       session['user'] = user        # set 'user' as the key, and our username as the value
-      
-#       found_user = users.query.filter_by(name = user).first()
-#       if found_user:
-#          session['email'] = found_user.email
-#       else:
-#          usr = users(user, None)
-#          db.session.add(usr)
-#          db.session.commit()
-      
-      
-#       flash("login success!")
-#       return redirect(url_for('user'))
-#    # if we are just visiting the page, redirect to the login page, or to the user if their info is still stored
-#    else:
-#       if 'user' in session:         # if the value user exists in our session, redirect to the user page
-#          flash("Already logged in!")
-#          return redirect(url_for('user'))
-#       return render_template('login.html')
-      
-   
-# # route to the user page only after logging in, else just go to the login page
-# @app.route('/user', methods=["GET", "POST"])
-# def user():
-#    email = None
-#    if 'user' in session:
-#       user = session['user']
-      
-#       if request.method == "POST":
-#          email = request.form['email']
-#          session['email'] = email
-#          found_user = users.query.filter_by(name = user).first()
-#          found_user.email = email
-#          db.session.commit()
-#          flash('email was saved!')
-#       else:
-#          if 'email' in session:
-#             email = session["email"]
-         
-#       return render_template('user.html', email = email)
-#    else:
-#       flash('You are not logged in.')
-#       return redirect(url_for('login'))
-   
-# # basically a function to delete info on the user and redirect to the login page
-# @app.route('/logout')
-# def logout():
-#    if 'user' in session:
-#       user = session['user']
-#       session.pop('user', None)
-#       session.pop('email', None)
-#       flash(f'You have been logged out, {user}.', 'info')   # category info, warning, and error built in
-#    return redirect(url_for('login'))
-
-# # run the instance of the flask application
-# if __name__ == '__main__':
-#    with app.app_context():
-#       db.create_all()
-#    app.run(debug = True)
-
-
+# Set up the app and configure sqlalchemy          
 app = Flask(__name__)
 
 app.secret_key = 'key'
@@ -121,68 +15,73 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
+# Home page, not ready
 @app.route('/')
 def home():
    return '<p> work in progress </p>'
 
+# Allow users to make and look at their posts
 @app.route('/user_posts', methods=['GET', 'POST'])
 def user_posts():
+   
+   # Go to page, query posts table for all posts, display
    if request.method == 'GET':
       if 'username' in session:
-         all_posts = posts.query.with_entities(posts.content).filter(posts.user_id == session['id']).all()
-         
-         post_text = []
-         for result in all_posts:
-            post_text.append(result[0])
-         
-         return render_template('index.html', len = len(all_posts), username = session['username'], post = post_text)
+         all_user_posts = table_event.return_posts(session['id'])
+         return render_template('index.html', len = len(all_user_posts), username = session['username'], post = all_user_posts)
       return render_template('login.html')
+   
+   # grab info from post text area, set info in table
    else:
       new_post = request.form['post']
-      session['post'] = new_post
       
-      user_posts = posts(session['id'], new_post)
-      db.session.add(user_posts)
+      db.session.add(posts(session['id'], new_post))
       db.session.commit()
-      
-      session.pop('post')
-      
-      if 'post' in session:
-         print("Pop did NOT work")
       
       return redirect(url_for('user_posts'))
       
-   
+# login or redirect to create profile
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+   
+   # if logged in, redirect to profile
    if request.method == 'GET':
       if 'username' in session:
          return redirect(url_for('profile', username=session['username']))
       return render_template('login.html')
+   
+   # take info from login form, set those as current session, query and check if this user account has been made
    else:
       session.permanent = True
+      
       current_user = request.form['username']
       current_password = request.form['password']
+      
       session['username'] = current_user
       session['password'] = current_password
       
       found_user = profiles.query.filter(profiles.username == current_user, profiles.password == current_password).first()
+      
+      # If the user is found, log them in and set the id in the session
       if found_user:
          session['id'] = found_user._id
          session['type'] = found_user.user_type
          
-         
          return redirect(url_for('profile', username=session['username']))
+      
+      # if the user doesnt exist, redirect to create profile
       else:
          session.clear()
          return redirect(url_for('create_profile'))
       
+# when this url is inputted, pop the session info (log user out)
 @app.route('/logout')
 def logout():
    if 'username' in session:
       session.clear()
    return redirect(url_for('login'))      
 
+# get info from form, set into table
 @app.route('/create_profile', methods=['GET', 'POST'])
 def create_profile():
    if request.method == 'GET':
@@ -202,6 +101,7 @@ def create_profile():
       
       return redirect(url_for('login'))
 
+# show profile if the user is logged in
 @app.route('/user')
 def profile():
    if 'username' in session:
@@ -209,6 +109,7 @@ def profile():
    else:
       return redirect('login')
 
+# run app!
 if __name__ == '__main__':
    with app.app_context():
       db.create_all()

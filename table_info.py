@@ -1,5 +1,4 @@
 from db import db
-from sqlalchemy.orm import load_only
 from datetime import datetime
 
 class profiles(db.Model):
@@ -38,7 +37,13 @@ class table_event():
       db.session.commit()
    
    def return_posts(temp_id):
-      return posts.query.filter(posts.user_id == temp_id).options(load_only('content')).all()
+      all_posts = posts.query.with_entities(posts.content).filter(posts.user_id == temp_id).all()
+         
+      post_text = []
+      for result in all_posts:
+         post_text.append(result[0])
+      
+      return post_text
       
    
 
