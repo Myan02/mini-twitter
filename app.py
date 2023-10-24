@@ -1,5 +1,5 @@
 from flask import Flask, render_template, url_for, redirect, request, session, flash
-from table_info import profiles, posts
+from table_info import profiles, posts, profile_update
 from db import db
 
 from datetime import timedelta, datetime
@@ -119,12 +119,15 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
+
+@app.route('/', methods=['GET', 'POST'])
+def home():
+   if request.method == 'GET':
+      return render_template('index.html')
+   else:
+      pass
    
-class profile_update():
-   def delete_user(temp_username):
-      profiles.query.filter_by(username = temp_username).delete()
-      db.session.commit()
-      
+
       
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -154,7 +157,6 @@ def logout():
       session.clear()
    return redirect(url_for('login'))      
 
-
 @app.route('/create_profile', methods=['GET', 'POST'])
 def create_profile():
    if request.method == 'GET':
@@ -174,7 +176,7 @@ def create_profile():
       
       return redirect(url_for('login'))
 
-@app.route('/<username>')
+@app.route('/user/<username>')
 def profile(username):
    if 'username' in session:
       return render_template('profile.html', current_username=username)

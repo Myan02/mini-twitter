@@ -30,5 +30,10 @@ class posts(db.Model):
    def __init__(self, content):
       self.content = content
       
+class profile_update():
+   def delete_user(temp_username):
+      profiles.query.filter_by(username = temp_username).delete()
+      db.session.commit()
+      
    
 
