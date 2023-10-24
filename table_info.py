@@ -1,4 +1,5 @@
 from db import db
+from sqlalchemy.orm import load_only
 from datetime import datetime
 
 class profiles(db.Model):
@@ -24,16 +25,20 @@ class profiles(db.Model):
 class posts(db.Model):
    _id = db.Column('id', db.Integer, primary_key=True)
    content = db.Column(db.Text, nullable=False)
-   time_posted = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+   time_posted = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
    user_id = db.Column(db.Integer, db.ForeignKey('profiles.id'), nullable=False)
    
-   def __init__(self, content):
+   def __init__(self, user_id, content):
+      self.user_id = user_id
       self.content = content
       
-class profile_update():
+class table_event():
    def delete_user(temp_username):
       profiles.query.filter_by(username = temp_username).delete()
       db.session.commit()
+   
+   def return_posts(temp_id):
+      return posts.query.filter(posts.user_id == temp_id).options(load_only('content')).all()
       
    
 

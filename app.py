@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, redirect, request, session, flash
-from table_info import profiles, posts, profile_update
+from table_info import profiles, posts, table_event
 from db import db
+from sqlalchemy.orm import load_only
 
 from datetime import timedelta, datetime
 
@@ -120,15 +121,38 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def home():
-   if request.method == 'GET':
-      return render_template('index.html')
-   else:
-      pass
-   
+   return '<p> work in progress </p>'
 
+@app.route('/user_posts', methods=['GET', 'POST'])
+def user_posts():
+   if request.method == 'GET':
+      if 'username' in session:
+         all_posts = posts.query.with_entities(posts.content).filter(posts.user_id == session['id']).all()
+         
+         post_text = []
+         for result in all_posts:
+            post_text.append(result[0])
+         
+         return render_template('index.html', len = len(all_posts), username = session['username'], post = post_text)
+      return render_template('login.html')
+   else:
+      new_post = request.form['post']
+      session['post'] = new_post
       
+      user_posts = posts(session['id'], new_post)
+      db.session.add(user_posts)
+      db.session.commit()
+      
+      session.pop('post')
+      
+      if 'post' in session:
+         print("Pop did NOT work")
+      
+      return redirect(url_for('user_posts'))
+      
+   
 @app.route('/login', methods=['GET', 'POST'])
 def login():
    if request.method == 'GET':
@@ -144,7 +168,9 @@ def login():
       
       found_user = profiles.query.filter(profiles.username == current_user, profiles.password == current_password).first()
       if found_user:
+         session['id'] = found_user._id
          session['type'] = found_user.user_type
+         
          
          return redirect(url_for('profile', username=session['username']))
       else:
@@ -176,10 +202,10 @@ def create_profile():
       
       return redirect(url_for('login'))
 
-@app.route('/user/<username>')
-def profile(username):
+@app.route('/user')
+def profile():
    if 'username' in session:
-      return render_template('profile.html', current_username=username)
+      return render_template('profile.html', current_username=session['username'])
    else:
       return redirect('login')
 
