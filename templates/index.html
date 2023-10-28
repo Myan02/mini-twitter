@@ -33,9 +33,10 @@
 
       <h2>POSTS:</h2><br>
 
-      {% for i in range(0, len) %}
+      {% for i in range(len - 1, -1, -1) %}
          <p>By: {{username}}</p>
          <p>Post: <h3>{{post[i]}}</h3></p>
+         <p>Time Posted: {{ time_posted[i] }}</p>
          <br>
       {% endfor %}
 
