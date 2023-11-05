@@ -1,2 +1,2 @@
-# mini-twitter
+# Mini-Twitter
 A repository to hold all files for the mini twitter project
