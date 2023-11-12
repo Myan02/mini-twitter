@@ -24,7 +24,7 @@ class profiles(db.Model):
 class posts(db.Model):
    _id = db.Column('id', db.Integer, primary_key=True)
    content = db.Column(db.Text, nullable=False)
-   time_posted = db.Column(db.DateTime, nullable=True, default=datetime.utcnow)
+   time_posted = db.Column(db.String(64), nullable=True, default=datetime.now().strftime('%H:%M %B %d, %Y'))
    user_id = db.Column(db.Integer, db.ForeignKey('profiles.id'), nullable=False)
    
    def __init__(self, user_id, content):
@@ -37,13 +37,19 @@ class table_event():
       db.session.commit()
    
    def return_posts(temp_id):
-      all_posts = posts.query.with_entities(posts.content).filter(posts.user_id == temp_id).all()
+      all_posts = posts.query.with_entities(posts.content, posts.time_posted).filter(posts.user_id == temp_id).all()
          
-      post_text = []
-      for result in all_posts:
-         post_text.append(result[0])
       
-      return post_text
+      post_text = []
+      post_time = []
+      for result in all_posts:
+         content = result[0]
+         time = result[1]
+         
+         post_text.append(content)
+         post_time.append(time)
+      
+      return post_text, post_time
       
    
 
