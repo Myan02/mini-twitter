@@ -1,0 +1,51 @@
+#post_mes{
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.2);
+    padding: 0px 0px 8px 0px;
+}
+input[type=text],select{
+    width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display:block;
+  border: 0px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+.btn {
+    background-color: white;
+    border: none;
+    color: white;
+    padding: 10px 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  /* Darker background on mouse-over */
+.btn:hover {
+    background-color: rgba(65, 105, 225, 0.077);
+    
+}
+#avatar{
+    width: 8%;
+    border-radius: 50%; 
+    margin: 1px 0 1px 0;
+}
+#profile_img{
+    border-radius: 50%; 
+    padding: 0px 0px;
+
+}
+
+#message{
+    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.2);
+    padding: 0px 0px 20px 0px;
+    border: 10px
+}
+.btn {
+    background-color: white;
+    border: none;
+    color: black;
+    padding: 10px 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
