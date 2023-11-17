@@ -87,17 +87,20 @@ def create_profile():
    if request.method == 'GET':
       return render_template('create_profile.html')
    else:
-      new_username = request.form['create_username']
-      new_password = request.form['create_password']
-      new_display_name = request.form['display_name']
-      new_birthday = request.form['birthday']
-      chosen_user_type = request.form['user_type']
-      new_account_info = request.form['account_info']
-      new_account_value = request.form['account_value']
-      
-      new_user = profiles(new_username, new_password, new_display_name, new_birthday, chosen_user_type, new_account_info, new_account_value)
-      db.session.add(new_user)
-      db.session.commit()
+      try:
+         new_username = request.form['create_username']
+         new_password = request.form['create_password']
+         new_display_name = request.form['display_name']
+         new_birthday = request.form['birthday']
+         chosen_user_type = request.form['user_type']
+         new_account_info = request.form['account_info']
+         new_account_value = request.form['account_value']
+         
+         new_user = profiles(new_username, new_password, new_display_name, new_birthday, chosen_user_type, new_account_info, new_account_value)
+         db.session.add(new_user)
+         db.session.commit()
+      except:
+         return redirect(url_for('login'))
       
       return redirect(url_for('login'))
 
