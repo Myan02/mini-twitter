@@ -1,5 +1,5 @@
-from flask import Flask, render_template, url_for, redirect, request, session, flash
-from table_info import profiles, posts, table_event
+from flask import Flask, render_template, url_for, redirect, request, session, flash, jsonify
+from table_info import profiles, posts, likes, table_event
 from db import db
 
 from datetime import timedelta, datetime
@@ -27,8 +27,8 @@ def user_posts():
    # Go to page, query posts table for all posts, display
    if request.method == 'GET':
       if 'username' in session:
-         all_user_posts, all_post_times = table_event.return_posts(session['id'])
-         return render_template('index.html', len = len(all_user_posts), username=session['username'], post=all_user_posts, time_posted=all_post_times)
+         all_post_ids, all_user_posts, all_post_times = table_event.return_posts(session['id'])
+         return render_template('index.html', len = len(all_user_posts), username=session['username'], post_id=all_post_ids, post=all_user_posts, time_posted=all_post_times)
       return redirect(url_for('login'))
    
    # grab info from post text area, set info in table
@@ -39,6 +39,22 @@ def user_posts():
       db.session.commit()
       
       return redirect(url_for('user_posts'))
+   
+@app.route('/get_post/<int:get_selected_post>', methods=['POST'])
+def get_post(get_selected_post):
+   is_liked = likes.query.filter_by(liked_post=get_selected_post).first()
+   
+   if is_liked:
+      db.session.delete(is_liked)
+      db.session.commit()
+   else:
+      new_like = likes(session['id'], get_selected_post)
+      db.session.add(new_like)
+      db.session.commit()
+   
+   
+   return redirect(url_for('user_posts'))
+
       
 # login or redirect to create profile
 @app.route('/login', methods=['GET', 'POST'])

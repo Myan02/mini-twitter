@@ -36,12 +36,10 @@ class likes(db.Model):
    _id = db.Column('id', db.Integer, primary_key=True)
    current_user = db.Column(db.Integer, db.ForeignKey('profiles.id'), nullable=False)
    liked_post = db.Column(db.Integer, db.ForeignKey('posts.id') , nullable=False)
-   original_poster = db.Column(db.Integer, db.ForeignKey('posts.user_id'), nullable=False)
    
-   def __init__(self, current_user, liked_post, original_poster):
+   def __init__(self, current_user, liked_post):
       self.current_user = current_user
       self.liked_post = liked_post
-      self.original_poster = original_poster
       
       
 class table_event():
@@ -50,18 +48,21 @@ class table_event():
       db.session.commit()
    
    def return_posts(temp_id):
-      all_posts = posts.query.with_entities(posts.content, posts.time_posted).filter(posts.user_id == temp_id).all()
+      all_posts = posts.query.with_entities(posts._id, posts.content, posts.time_posted).filter(posts.user_id == temp_id).all()
          
+      post_id = []   
       post_text = []
       post_time = []
       for result in all_posts:
-         content = result[0]
-         time = result[1]
+         id = result[0]
+         content = result[1]
+         time = result[2]
          
+         post_id.append(id)
          post_text.append(content)
          post_time.append(time)
       
-      return post_text, post_time
+      return post_id, post_text, post_time
       
    
 
