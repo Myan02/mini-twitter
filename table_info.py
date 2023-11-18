@@ -31,6 +31,19 @@ class posts(db.Model):
       self.user_id = user_id
       self.content = content
       
+
+class likes(db.Model):
+   _id = db.Column('id', db.Integer, primary_key=True)
+   current_user = db.Column(db.Integer, db.ForeignKey('profiles.id'), nullable=False)
+   liked_post = db.Column(db.Integer, db.ForeignKey('posts.id') , nullable=False)
+   original_poster = db.Column(db.Integer, db.ForeignKey('posts.user_id'), nullable=False)
+   
+   def __init__(self, current_user, liked_post, original_poster):
+      self.current_user = current_user
+      self.liked_post = liked_post
+      self.original_poster = original_poster
+      
+      
 class table_event():
    def delete_user(temp_username):
       profiles.query.filter_by(username = temp_username).delete()
@@ -39,7 +52,6 @@ class table_event():
    def return_posts(temp_id):
       all_posts = posts.query.with_entities(posts.content, posts.time_posted).filter(posts.user_id == temp_id).all()
          
-      
       post_text = []
       post_time = []
       for result in all_posts:
