@@ -46,6 +46,10 @@ class table_event():
    def delete_user(temp_username):
       profiles.query.filter_by(username = temp_username).delete()
       db.session.commit()
+
+   def is_liked(temp_id):
+      return likes.query.filter_by(liked_post=temp_id).first()
+      
    
    def return_posts(temp_id):
       all_posts = posts.query.with_entities(posts._id, posts.content, posts.time_posted).filter(posts.user_id == temp_id).all()

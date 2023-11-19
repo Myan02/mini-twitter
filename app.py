@@ -22,14 +22,21 @@ def home():
 
 # Allow users to make and look at their posts
 @app.route('/user_posts', methods=['GET', 'POST'])
+# @app.route('/user_posts/<selected_post>', methods=['GET'])
 def user_posts():
    
    # Go to page, query posts table for all posts, display
    if request.method == 'GET':
-      if 'username' in session:
-         all_post_ids, all_user_posts, all_post_times = table_event.return_posts(session['id'])
-         return render_template('index.html', len = len(all_user_posts), username=session['username'], post_id=all_post_ids, post=all_user_posts, time_posted=all_post_times)
-      return redirect(url_for('login'))
+         if 'username' in session:
+            all_post_ids, all_user_posts, all_post_times = table_event.return_posts(session['id'])
+            return render_template('index.html', 
+                                 len = len(all_user_posts), 
+                                 username=session['username'], 
+                                 post_id=all_post_ids, 
+                                 post=all_user_posts, 
+                                 time_posted=all_post_times
+                                 )
+         return redirect(url_for('login'))
    
    # grab info from post text area, set info in table
    else:
@@ -42,7 +49,7 @@ def user_posts():
    
 @app.route('/get_post/<int:get_selected_post>', methods=['POST'])
 def get_post(get_selected_post):
-   is_liked = likes.query.filter_by(liked_post=get_selected_post).first()
+   is_liked = table_event.is_liked(get_selected_post)
    
    if is_liked:
       db.session.delete(is_liked)
