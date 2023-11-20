@@ -11,6 +11,20 @@ input[type=text],select{
   border-radius: 4px;
   box-sizing: border-box;
 }
+
+input[type=submit]{
+    background-color: #26a7de;
+    border: none;
+    color: black;
+    padding: 10px 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 30%;
+}
+
+#post-btn:hover{
+    background-color: #2192c2;
+}
 .btn {
     background-color: white;
     border: none;
@@ -41,11 +55,3 @@ input[type=text],select{
     padding: 0px 0px 20px 0px;
     border: 10px
 }
-.btn {
-    background-color: white;
-    border: none;
-    color: black;
-    padding: 10px 10px;
-    font-size: 16px;
-    cursor: pointer;
-  }
