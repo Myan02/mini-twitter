@@ -10,6 +10,7 @@
 
 {% block script %}
    <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
+   <script src="https://kit.fontawesome.com/0282164ea3.js" crossorigin="anonymous"></script>
 {% endblock %}
 
 
@@ -25,7 +26,7 @@
       <div>
          <form action="" method="POST">
             <textarea name="post" id="post" cols="30" rows="10"></textarea><br><br>
-            <input type="submit" value="submit">
+            <input type="submit" value="submit" name="tweet_submit">
          </form>
       </div>
 
@@ -38,8 +39,13 @@
          <p>Post: <h3>{{post[i]}}</h3></p>
          <p>Time Posted: {{ time_posted[i] }}</p>
 
-         <form action="{{ url_for('get_post', get_selected_post=post_id[i]) }}" method="POST">
-            <input type="submit" value="like" id="like_button" onclick="toggle_like(4)">
+         <form action="{{ url_for('user_posts', selected_post=post_id[i]) }}" method="POST">
+            <input type="submit" value="like" id="like_button" name="like_button">
+            
+            {% if post_id[i] in users_likes %}
+               <i class="fas fa-heart" ></i>
+            {% endif %}
+            
          </form>
 
          <br>

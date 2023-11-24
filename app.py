@@ -14,6 +14,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
+   
 
 # Home page, not ready
 @app.route('/')
@@ -21,48 +22,57 @@ def home():
    return '<p> work in progress </p>'
 
 # Allow users to make and look at their posts
-@app.route('/user_posts', methods=['GET', 'POST'])
-# @app.route('/user_posts/<selected_post>', methods=['GET'])
-def user_posts():
+@app.route('/user_posts', methods=['GET', 'POST'], defaults={'selected_post': 0})
+@app.route('/user_posts/<selected_post>', methods=['POST'])
+def user_posts(selected_post):
    
    # Go to page, query posts table for all posts, display
    if request.method == 'GET':
          if 'username' in session:
             all_post_ids, all_user_posts, all_post_times = table_event.return_posts(session['id'])
+            current_users_likes = likes.query.with_entities(likes.liked_post).filter(likes.current_user == session['id']).all()
+            
+            flat_list_of_users = []
+            for row in current_users_likes:
+               flat_list_of_users.extend(row)
+
+            print(f'\n\n{flat_list_of_users}\n\n')
+            print(f'\n\n{all_post_ids}\n\n')
+            print(f'\n\n{current_users_likes}\n\n')
             return render_template('index.html', 
                                  len = len(all_user_posts), 
                                  username=session['username'], 
                                  post_id=all_post_ids, 
                                  post=all_user_posts, 
-                                 time_posted=all_post_times
+                                 time_posted=all_post_times,
+                                 users_likes=flat_list_of_users
                                  )
          return redirect(url_for('login'))
+            # found_user = profiles.query.filter(profiles.username == current_user, profiles.password == current_password).first()
    
    # grab info from post text area, set info in table
-   else:
-      new_post = request.form['post']
+   elif request.method == 'POST':
+      if 'tweet_submit' in request.form:
+         new_post = request.form['post']
       
-      db.session.add(posts(session['id'], new_post))
-      db.session.commit()
+         db.session.add(posts(session['id'], new_post))
+         db.session.commit()
+         
+         return redirect(url_for('user_posts'))
       
-      return redirect(url_for('user_posts'))
-   
-@app.route('/get_post/<int:get_selected_post>', methods=['POST'])
-def get_post(get_selected_post):
-   is_liked = table_event.is_liked(get_selected_post)
-   
-   if is_liked:
-      db.session.delete(is_liked)
-      db.session.commit()
-   else:
-      new_like = likes(session['id'], get_selected_post)
-      db.session.add(new_like)
-      db.session.commit()
-   
-   
-   return redirect(url_for('user_posts'))
+      elif 'like_button' in request.form:
+         is_liked = table_event.is_liked(selected_post)
+         print(f'\n\n {is_liked} \n\n')
 
-      
+         if is_liked:
+            db.session.delete(is_liked)
+            db.session.commit()
+         else:
+            new_like = likes(session['id'], selected_post)
+            db.session.add(new_like)
+            db.session.commit()
+         return redirect(url_for('user_posts'))
+
 # login or redirect to create profile
 @app.route('/login', methods=['GET', 'POST'])
 def login():
