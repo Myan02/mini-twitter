@@ -14,7 +14,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
-   
 
 # Home page, not ready
 @app.route('/')
@@ -48,7 +47,6 @@ def user_posts(selected_post):
                                  users_likes=flat_list_of_users
                                  )
          return redirect(url_for('login'))
-            # found_user = profiles.query.filter(profiles.username == current_user, profiles.password == current_password).first()
    
    # grab info from post text area, set info in table
    elif request.method == 'POST':

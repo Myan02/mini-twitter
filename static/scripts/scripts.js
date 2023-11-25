@@ -1,5 +1,5 @@
-function toggle_like(post_id) {
+function toggle_like() {
 
-   console.log(post_id)
+   document.getElementById('heart').innerHTML = '<i class="fas fa-heart" style="color: rgb(255, 56, 56);" id="heart"></i>'
    
 }
