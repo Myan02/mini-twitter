@@ -24,12 +24,14 @@ class profiles(db.Model):
 class posts(db.Model):
    _id = db.Column('id', db.Integer, primary_key=True)
    content = db.Column(db.Text, nullable=False)
+   post_type = db.column(db.String(50))
    time_posted = db.Column(db.String(64), nullable=True, default=datetime.now().strftime('%H:%M %B %d, %Y'))
    user_id = db.Column(db.Integer, db.ForeignKey('profiles.id'), nullable=False)
    
-   def __init__(self, user_id, content):
+   def __init__(self, user_id, content, post_type):
       self.user_id = user_id
       self.content = content
+      self.post_type = post_type
       
 class table_event():
    def delete_user(temp_username):

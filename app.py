@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, request, session, flash
+from flask import Flask, render_template, url_for, redirect, request, session, flash, jsonify
 from table_info import profiles, posts, table_event
 from db import db
 
@@ -19,6 +19,7 @@ db.init_app(app)
 @app.route('/')
 def home():
    return '<p> work in progress </p>'
+       
 
 # Allow users to make and look at their posts
 @app.route('/user_posts', methods=['GET', 'POST'])
@@ -26,21 +27,28 @@ def user_posts():
    
    # Go to page, query posts table for all posts, display
    if request.method == 'GET':
-      if 'username' in session:
+      if 'username' in session:     
          all_user_posts, all_post_times = table_event.return_posts(session['id'])
+
          return render_template('index.html', len = len(all_user_posts), username=session['username'], post=all_user_posts, time_posted=all_post_times)
       return redirect(url_for('login'))
    
    # grab info from post text area, set info in table
    else:
+
       new_post = request.form['post']
+      post_type = request.form['post_type']
+      chars = len(new_post)
       
-      db.session.add(posts(session['id'], new_post))
+     # new_object = posts(session['id'], content=new_post, post_type=post_type)
+      new_object = posts(session['id'], content=new_post, post_type=post_type)
+
+      db.session.add(new_object)
       db.session.commit()
       
       return redirect(url_for('user_posts'))
       
-# login or redirect to create profile
+# login or redirect to create profilef
 @app.route('/login', methods=['GET', 'POST'])
 def login():
    
@@ -95,7 +103,6 @@ def create_profile():
          chosen_user_type = request.form['user_type']
          new_account_info = request.form['account_info']
          new_account_value = request.form['account_value']
-         
          new_user = profiles(new_username, new_password, new_display_name, new_birthday, chosen_user_type, new_account_info, new_account_value)
          db.session.add(new_user)
          db.session.commit()

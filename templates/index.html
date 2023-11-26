@@ -25,15 +25,18 @@
       <div>
          <form action="" method="POST">
             <textarea name="post" id="post" cols="30" rows="10"></textarea><br><br>
-            <input type="submit" value="submit">
+            <input type="submit" name="post_type" value="ad">
+            <input type="submit" name="post_type" value="job">
+            <input type="submit" name="post_type" value="submit">
+            
          </form>
       </div>
 
       <br>
 
       <h2>POSTS:</h2><br>
-
       {% for i in range(len - 1, -1, -1) %}
+         <p> {{post_type}} </p>
          <p>By: {{username}}</p>
          <p>Post: <h3>{{post[i]}}</h3></p>
          <p>Time Posted: {{ time_posted[i] }}</p>
