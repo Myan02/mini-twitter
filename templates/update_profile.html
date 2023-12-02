@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }} ">
+    <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
+    <title>Edit Profile</title>
+</head>
+
+<div class = "container">
+<body>
+    <header>
+        <h1 style="text-align: center;">Edit Profile</h1>
+        <hr>
+    </header>
+
+    <form action="{{ url_for('update_profile') }}" method="POST" enctype="multipart/form-data">
+        <label for="profile_picture">Choose a new profile picture:</label>
+        <input type="file" name="profile_picture" id="profile_picture" accept=".png, .jpg, .jpeg, .gif" style="margin-bottom: 20px"><br>
+    
+        <!-- <label for="background_picture">Choose a new background picture:</label>
+        <input type="file" name="background_picture" id="background_picture" accept=".png, .jpg, .jpeg, .gif" style="margin-bottom: 20px"><br> -->
+    
+        <input class="button black_button" type="submit" value="Submit" style="color: black; background-color: aliceblue; font-size: 20px; margin-top: 20px;">
+    </form>
+    
+    
+
+</body>
+</div>
+</html>

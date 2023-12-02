@@ -17,55 +17,49 @@
 
 
 {% block main %}
-   
-<body>
-   <div class="container">
-       <div class="wrapper">
-           <div class="sidebar">
-               <h2>mini-Twitter</h2>
-               <ul>
-                   <li><a href="{{ url_for('user_posts') }}"><i class="fas fa-home"></i>Home</a></li>
-                   <li><a href="#"><i class="fas fa-user"></i>Profile</a></li>
-                   <li><a href="#"><i class="fas fa-address-card"></i>Trending</a></li>
-                   <li><a href="#"><i class="fas fa-project-diagram"></i>Settings</a></li>
-               </ul> 
-           </div>
-       </div>
+<main class="container">
 
-       <div class="box1">
-           <img src="outer_space.jpg" alt="background picture">
+    <div class="sidebar">
 
-           <div class="description">
-               <h2>{{ current_username }}</h2>
-               <span>@a_rodriguez</span>
-               <p> Soccer | Madrid fan | Colombia </p>
-               <p><br>Welcome to my page, where I talk about soccer, school, and all things life!</p>
-               <p><br>320 <b>Following</b> &nbsp &nbsp  400 <b>Followers</b></p>
+        <h2><img style = 'height: 50px; width: 50px; margin-right: 10px;' src="/static/images/bunny.png" alt="cartoon bird">mini-Twitter</h2>
+        <ul>
+            <li><a href="/home"><i class="fas fa-home"></i>Home</a></li>
+            <li><a href="/profile"><i class="fas fa-user"></i>Profile</a></li>
+            <li><a href="#"><i class="fas fa-address-card"></i>Trending</a></li>
+            <li><a href="#"><i class="fas fa-project-diagram"></i>Settings</a></li>
+            <li><button class="tweet_button button"><a href="/user_posts">Tweet</a></button></li>
+            <li><button class="logout_button button"><a href="/logout">logout</a></button></li>
+        </ul>
+    </div>
 
-           </div>
+    <div class="content" style="background-color: white;">
+        <div class="profile-box">
+            <div class="profile-header">
+                <img src="/static/uploads/default_background.png" alt="Background Picture">
+                <button id="edit-profile-button"><a href="{{ url_for('update_profile') }}">Edit Profile</a></button>
+            </div>
 
-           <div class="navigation">
-               <hr>
-               <ul>
-                   <li><a href="#">Tweets</a></li>
-                   <li><a href="#">Replies</a></li>
-                   <li><a href="#">Media</a></li>
-                   <li><a href="#">Likes</a></li>
-               </ul>
-           </div>
-       </div>
+            <div class="profile-picture">
+                <img src="{{ url_for('static', filename='uploads/' + profile_picture) }}" alt="Profile Picture">
+            </div>
 
-       <div class="profile_picture">
-           <img src="default_profile.webp" alt="profile picture">
-       </div>
+            <div class="profile-content">
+                <h2>{{ display_name }}</h2>
+                <span style = 'margin-bottom: 10px;'>@{{current_username}}</span>
+                <p>Soccer | Madrid fan | Colombia</p>
+                <p>Welcome to my page, where I talk about soccer, school, and all things life!</p>
+                <p style = 'margin-top: 5px;'>320 <b>Following</b> &nbsp; 400 <b>Followers</b></p>
+            </div>
 
-       <div class="bird">
-           <img src="cartoon_bird.jpg" alt="cartoon bird">
-       </div>
-   
-   </div>
-
-      
-
-</body>
+            <div class="profile-navigation">
+                <ul>
+                    <li><a href="#">Tweets</a></li>
+                    <li><a href="#">Replies</a></li>
+                    <li><a href="#">Media</a></li>
+                    <li><a href="#">Likes</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</main>
 {% endblock %}

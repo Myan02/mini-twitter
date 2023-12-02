@@ -10,9 +10,11 @@ class profiles(db.Model):
    user_type = db.Column(db.String(64))
    account_info = db.Column(db.Integer)
    account_value = db.Column(db.Integer)
+   profile_picture = db.Column(db.String(255))
+   background_picture = db.Column(db.String(255))
    post = db.relationship('posts', backref='profiles', lazy=True)
    
-   def __init__(self, username, password, display_name, birthday, user_type, account_info, account_value):
+   def __init__(self, username, password, display_name, birthday, user_type, account_info, account_value, profile_picture = None, background_picture = None):
       self.username = username
       self.password = password
       self.display_name = display_name
@@ -20,6 +22,8 @@ class profiles(db.Model):
       self.user_type = user_type
       self.account_info = account_info
       self.account_value = account_value
+      self.profile_picture = profile_picture
+      self.background_picture = profile_picture
 
 class posts(db.Model):
    _id = db.Column('id', db.Integer, primary_key=True)
@@ -49,6 +53,9 @@ class table_event():
 
    def is_liked(temp_id):
       return likes.query.filter_by(liked_post=temp_id).first()
+   
+   def get_times_liked(temp_id):
+      return likes.query.with_entities(likes.liked_post).filter_by(liked_post=temp_id).all()
       
    
    def return_posts(temp_id):

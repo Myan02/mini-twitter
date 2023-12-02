@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}
+   <title>Profile</title>
+{% endblock %}
+
+{% block css %}
+   <link rel="icon" href="cartoon_bird.jpg" type="image/x-icon">
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pfp.css') }} ">
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/posts.css') }} ">
+{% endblock %}
+
+{% block script %}
+   <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
+   <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
+{% endblock %}
+
+{% block main %}
+
+
+    <main class = "container">
+        <div class="sidebar">
+            <h2><img style='height: 50px; width: 50px; margin-right: 10px;' src="/static/images/bunny.png" alt="cartoon bird">mini-Twitter</h2>
+            <ul>
+                <li><a href="/home"><i class="fas fa-home"></i>Home</a></li>
+                <li><a href="/profile"><i class="fas fa-user"></i>Profile</a></li>
+                <li><a href="#"><i class="fas fa-address-card"></i>Trending</a></li>
+                <li><a href="#"><i class="fas fa-project-diagram"></i>Settings</a></li>
+                <li><button class="tweet_button button"><a href="/user_posts">Tweet</a></button></li>
+                <li><button class="logout_button button"><a href="/logout">logout</a></button></li>
+            </ul>
+        </div>
+
+        <div class = "content" style = "background-color: white;">
+            <div style = "font-weight: bold; font-size: 20px; margin-top: 15px;">
+                <p>Home</p>
+                <hr>
+            </div>
+
+            <br>
+
+            <h2>POSTS:</h2><br>
+
+            {% for i in range(len - 1, -1, -1) %}
+            <div class="posts" style="background-color: rgb(121, 203, 248);">
+                By: {{username}}
+                <br><br>
+                Post: {{post[i]}}
+                <br><br>
+                Time Posted: {{ time_posted[i] }}
+                <br><br>
+
+                <form action="{{ url_for('home', selected_post=post_id[i]) }}" method="POST">
+                    <input type="submit" value="like" id="like_button" name="like_button">
+            
+                    {% if post_id[i] in users_likes %}
+                    <i class="fas fa-heart" style="color: rgb(247, 66, 66)" id="heart"></i>
+                        
+                    {% endif %}
+                    {{ number_of_likes }}
+                </form>
+            </div>
+            <br>
+            {% endfor %}
+        </div>
+    </main>
+
+{% endblock %}
+
+
