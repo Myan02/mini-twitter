@@ -30,6 +30,9 @@ class posts(db.Model):
    content = db.Column(db.Text, nullable=False)
    time_posted = db.Column(db.String(64), nullable=True, default=datetime.now().strftime('%H:%M %B %d, %Y'))
    user_id = db.Column(db.Integer, db.ForeignKey('profiles.id'), nullable=False)
+   number_of_likes = db.Column(db.Integer, default=0)
+   
+   likes = db.relationship('likes', backref='post', lazy=True)
    
    def __init__(self, user_id, content):
       self.user_id = user_id
@@ -59,21 +62,24 @@ class table_event():
       
    
    def return_posts(temp_id):
-      all_posts = posts.query.with_entities(posts._id, posts.content, posts.time_posted).filter(posts.user_id == temp_id).all()
+      all_posts = posts.query.with_entities(posts._id, posts.content, posts.time_posted, posts.number_of_likes).filter(posts.user_id == temp_id).all()
          
       post_id = []   
       post_text = []
       post_time = []
+      post_like_number = []
       for result in all_posts:
          id = result[0]
          content = result[1]
          time = result[2]
+         like_number = result[3]
          
          post_id.append(id)
          post_text.append(content)
          post_time.append(time)
+         post_like_number.append(like_number)
       
-      return post_id, post_text, post_time
+      return post_id, post_text, post_time, post_like_number
       
    
 

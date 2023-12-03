@@ -36,6 +36,8 @@ def read_censored_words(filename='static/censored_words.txt'):
      
 # Function to censor specific words in the text
 def censor_text(text, censor_list, replacement='****'):
+   censor_list = censor_list + [word.upper() for word in censor_list]
+
    for word in censor_list:
       text = text.replace(word, replacement, -1)
    return text
@@ -54,22 +56,23 @@ def home():
    # Go to page, query posts table for all posts, display
    if request.method == 'GET':
          if 'username' in session:
-            all_post_ids, all_user_posts, all_post_times = table_event.return_posts(session['id'])
+            all_post_ids, all_user_posts, all_post_times, all_post_like_number = table_event.return_posts(session['id'])
             current_users_likes = likes.query.with_entities(likes.liked_post).filter(likes.current_user == session['id']).all()
             
             flat_list_of_likes = []
             for row in current_users_likes:
                flat_list_of_likes.extend(row)
 
-            print(f'\n\n{flat_list_of_likes}\n\n')
-            print(f'\n\n{all_post_ids}\n\n')
+            # print(f'\n\n{flat_list_of_likes}\n\n')
+            # print(f'\n\n{all_post_ids}\n\n')
             return render_template('home.html', 
                                  len = len(all_user_posts), 
                                  username=session['username'], 
                                  post_id=all_post_ids, 
                                  post=all_user_posts, 
                                  time_posted=all_post_times,
-                                 users_likes=flat_list_of_likes
+                                 users_likes=flat_list_of_likes,
+                                 users_number_of_likes=all_post_like_number
                                  )
          return redirect(url_for('login'))
    
@@ -77,16 +80,18 @@ def home():
    elif request.method == 'POST':
       if 'like_button' in request.form:
          is_liked = table_event.is_liked(selected_post)
-         print(f'\n\n {is_liked} \n\n')
+         user_post_liked = posts.query.filter(posts._id == selected_post).first()
 
          if is_liked:
             db.session.delete(is_liked)
-            db.session.commit()
+            user_post_liked.number_of_likes -= 1
          else:
             new_like = likes(session['id'], selected_post)
+            
             db.session.add(new_like)
-            db.session.commit()
-         
+            user_post_liked.number_of_likes += 1
+            
+         db.session.commit()
          return redirect(url_for('home'))
       
 
@@ -99,22 +104,23 @@ def user_posts():
    # Go to page, query posts table for all posts, display
    if request.method == 'GET':
          if 'username' in session:
-            all_post_ids, all_user_posts, all_post_times = table_event.return_posts(session['id'])
+            all_post_ids, all_user_posts, all_post_times, all_post_like_number = table_event.return_posts(session['id'])
             current_users_likes = likes.query.with_entities(likes.liked_post).filter(likes.current_user == session['id']).all()
             
             flat_list_of_likes = []
             for row in current_users_likes:
                flat_list_of_likes.extend(row)
 
-            print(f'\n\n{flat_list_of_likes}\n\n')
-            print(f'\n\n{all_post_ids}\n\n')
+            # print(f'\n\n{flat_list_of_likes}\n\n')
+            # print(f'\n\n{all_post_ids}\n\n')
             return render_template('user_posts.html', 
                                  len = len(all_user_posts), 
                                  username=session['username'], 
                                  post_id=all_post_ids, 
                                  post=all_user_posts, 
                                  time_posted=all_post_times,
-                                 users_likes=flat_list_of_likes
+                                 users_likes=flat_list_of_likes,
+                                 users_number_of_likes=all_post_like_number
                                  )
          return redirect(url_for('login'))
    
@@ -133,16 +139,18 @@ def user_posts():
       
       elif 'like_button' in request.form:
          is_liked = table_event.is_liked(selected_post)
-         print(f'\n\n {is_liked} \n\n')
+         user_post_liked = posts.query.filter(posts._id == selected_post).first()
 
          if is_liked:
             db.session.delete(is_liked)
-            db.session.commit()
+            user_post_liked.number_of_likes -= 1
          else:
             new_like = likes(session['id'], selected_post)
+            
             db.session.add(new_like)
-            db.session.commit()
-         
+            user_post_liked.number_of_likes += 1
+            
+         db.session.commit()
          return redirect(url_for('user_posts'))
 
 # login or redirect to create profile
@@ -212,7 +220,7 @@ def create_profile():
                   return redirect(request.url)
          else:
             # No profile picture file included, set a default profile picture filename
-            profile_picture_filename = 'default_profile.jpg'
+            profile_picture_filename = 'default.jpg'
 
          # Check if background picture file is included in the request
          if 'background_picture' in request.files:
@@ -238,28 +246,74 @@ def create_profile():
       return redirect(url_for('login'))
    
 # show profile if the user is logged in
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    if 'username' in session:
-        # Get the user from the database
-        user = profiles.query.filter_by(username=session['username']).first()
+   
+   selected_post = request.args.get('selected_post', default=None, type=None)
+   
+   # Go to page, query posts table for all posts, display
+   if request.method == 'GET':
+         if 'username' in session:
+            all_post_ids, all_user_posts, all_post_times, all_post_like_number = table_event.return_posts(session['id'])
+            current_users_likes = likes.query.with_entities(likes.liked_post).filter(likes.current_user == session['id']).all()
+            
+            flat_list_of_likes = []
+            for row in current_users_likes:
+               flat_list_of_likes.extend(row)
 
-        if user:
-            # Get the profile picture filename from the database or use a default value
+            user = profiles.query.filter_by(username=session['username']).first()
             profile_picture = get_profile_picture_filename(user)
-            return render_template('profile.html', current_username=user.username,
-                                   display_name=user.display_name,
-                                   birthday=user.birthday,
-                                   user_type=user.user_type,
-                                   account_info=user.account_info,
-                                   account_value=user.account_value,
-                                   profile_picture=profile_picture)
-        else:
+            
+            return render_template('profile.html', 
+                                 len = len(all_user_posts), 
+                                 username=session['username'], 
+                                 post_id=all_post_ids, 
+                                 post=all_user_posts, 
+                                 time_posted=all_post_times,
+                                 users_likes=flat_list_of_likes,
+                                 users_number_of_likes=all_post_like_number,
+                                 current_username=user.username,
+                                 display_name=user.display_name,
+                                 birthday=user.birthday,
+                                 user_type=user.user_type,
+                                 account_info=user.account_info,
+                                 account_value=user.account_value,
+                                 profile_picture=profile_picture
+                                 )
+         else:
             flash('User not found', 'error')
             return redirect('login')
-    else:
-        return redirect('login')
+   
+   # grab info from post text area, set info in table
+   elif request.method == 'POST':
+      if 'tweet_submit' in request.form:
+         new_post = request.form['post']
+         
+         censor_words = read_censored_words()
+         censored_content = censor_text(new_post, censor_words)
+         
+         db.session.add(posts(session['id'], censored_content))
+         db.session.commit()
+         
+         return redirect(url_for('profile'))
+      
+      elif 'like_button' in request.form:
+         is_liked = table_event.is_liked(selected_post)
+         user_post_liked = posts.query.filter(posts._id == selected_post).first()
 
+         if is_liked:
+            db.session.delete(is_liked)
+            user_post_liked.number_of_likes -= 1
+         else:
+            new_like = likes(session['id'], selected_post)
+            
+            db.session.add(new_like)
+            user_post_liked.number_of_likes += 1
+            
+         db.session.commit()
+         return redirect(url_for('profile'))
+   
+   
 
 # Add a new route for updating the profile picture
 @app.route('/update_profile', methods=['GET', 'POST'])
