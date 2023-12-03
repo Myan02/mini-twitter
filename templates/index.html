@@ -22,25 +22,51 @@
 
 {% block main %}
    <main>
+
+      <div>
+         {% with messages = get_flashed_messages() %}
+         {% if messages %}
+            {% for msg in messages %}
+               <p>{{msg}}</p>
+            {% endfor %}
+         {% endif %}
+         {% endwith %}
+         <p> Balance: {{balance}}</p>
+      </div>
+
       <div>
          <form action="" method="POST">
             <textarea name="post" id="post" cols="30" rows="10"></textarea><br><br>
-            <input type="submit" name="post_type" value="ad">
-            <input type="submit" name="post_type" value="job">
-            <input type="submit" name="post_type" value="submit">
+            <input type="radio" id="AD" name="post_type" value="#ad">
+            <label for="AD">Advertisement</label><br>
+            <input type="radio" id="JOB" name="post_type" value="#job">
+            <label for="JOB">Job</label><br>
+            <input type="radio" id="regular" name="post_type" value="regular">
+            <label for="NEITHER">Regular</label><br>
+            <input type="submit" value="Submit">
             
          </form>
+
       </div>
 
       <br>
 
       <h2>POSTS:</h2><br>
       {% for i in range(len - 1, -1, -1) %}
-         <p> {{post_type}} </p>
-         <p>By: {{username}}</p>
-         <p>Post: <h3>{{post[i]}}</h3></p>
-         <p>Time Posted: {{ time_posted[i] }}</p>
-         <br>
+         {%if _type[i] != 'regular'%}
+            <p> {{_type[i]}} </p>
+            <p>By: {{username}}</p>
+            <p>Post: <h3>{{post[i]}}</h3></p>
+            <p>Time Posted: {{ time_posted[i] }}</p>
+            <p>Word Count: {{_chars[i]}}</p>
+            <br>
+         {% else %}
+            <p>By: {{username}}</p>
+            <p>Post: <h3>{{post[i]}}</h3></p>
+            <p>Time Posted: {{ time_posted[i] }}</p>
+            <p>Word Count: {{_chars[i]}}</p>
+            <br>
+         {%endif%}
       {% endfor %}
 
       

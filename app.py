@@ -1,6 +1,8 @@
 from flask import Flask, render_template, url_for, redirect, request, session, flash, jsonify
 from table_info import profiles, posts, table_event
+from flask_migrate import Migrate
 from db import db
+from sqlalchemy import func
 
 from datetime import timedelta, datetime
 
@@ -15,10 +17,60 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
 
+migrate= Migrate(app,db)
+
 # Home page, not ready
 @app.route('/')
 def home():
    return '<p> work in progress </p>'
+
+@app.route('/refill', methods = ['GET', 'POST'])
+def refill():
+   if request.method == 'POST':
+
+      amount = request.form['amount']
+      session['account_value'] = session['account_value'] + int(amount)
+      found_user = profiles.query.filter(profiles.username == session['username'], profiles.password == session['password']).first()
+
+      if found_user:
+         found_user.account_value = session['account_value']
+         db.session.commit()
+      return redirect(url_for('user_posts'))
+
+   return render_template('refill_account.html', account_info = session['account_info'], account_balance = session['account_value'])
+
+@app.route('/payment', methods=['GET', 'POST'])
+def payment():
+   if request.method == 'POST':
+      
+         decision = request.form['choice']
+
+         if decision == 'yes':
+            if (session['account_value'] <= 0) or (session['account_value'] < session['amount_owed']):
+               last_post = posts.query.filter_by(_id = db.session.query(func.max(posts._id))).first()
+               if last_post:
+                  db.session.delete(last_post)
+                  db.session.commit()
+               flash('You do not have enough money!, Please refill account!')
+               return redirect(url_for('refill'))
+            else:
+               session['account_value'] = session['account_value'] - session['amount_owed']
+               session['amount_owed'] = 0
+
+            found_user = profiles.query.filter(profiles.username == session['username'], profiles.password == session['password']).first()
+
+            if found_user:
+               found_user.account_value = session['account_value']
+               db.session.commit()
+               return redirect(url_for('user_posts'))
+         else:
+            last_post = posts.query.filter_by(_id = db.session.query(func.max(posts._id))).first()
+            if last_post:
+               db.session.delete(last_post)
+               db.session.commit()
+            return redirect(url_for('user_posts'))
+   return(render_template('payment.html', current_balance = session['account_value'], amount_owed = session['amount_owed']))
+
        
 
 # Allow users to make and look at their posts
@@ -28,25 +80,43 @@ def user_posts():
    # Go to page, query posts table for all posts, display
    if request.method == 'GET':
       if 'username' in session:     
-         all_user_posts, all_post_times = table_event.return_posts(session['id'])
+         all_user_posts, all_post_times, all_post_types, all_posts_chars = table_event.return_posts(session['id'])
 
-         return render_template('index.html', len = len(all_user_posts), username=session['username'], post=all_user_posts, time_posted=all_post_times)
+
+
+         return render_template('index.html', len = len(all_user_posts), username=session['username'], post=all_user_posts, time_posted=all_post_times, _type = all_post_types, _chars = all_posts_chars, balance = session['account_value'])
       return redirect(url_for('login'))
    
    # grab info from post text area, set info in table
    else:
 
-      new_post = request.form['post']
-      post_type = request.form['post_type']
-      chars = len(new_post)
       
-     # new_object = posts(session['id'], content=new_post, post_type=post_type)
-      new_object = posts(session['id'], content=new_post, post_type=post_type)
+      new_post = request.form['post']
+      _chars = len(new_post.split())
+
+      action = request.form['post_type']
+
+
+      new_object = posts(session['id'], content=new_post, post_type=action, characters=_chars)
 
       db.session.add(new_object)
       db.session.commit()
+
+      if (session['type'] != 'CU') and (_chars > 20):
+         amount_owed = (_chars-20)*0.1
+         session['amount_owed'] = amount_owed
+         return(redirect(url_for('payment')))
+      else:
+         amount_owed = _chars
+         session['amount_owed'] = amount_owed
+         return (redirect(url_for('payment')))
+
+
+      # new_object = posts(session['id'], content=new_post, post_type=action, characters=_chars)
+      # db.session.add(new_object)
+      # db.session.commit()
       
-      return redirect(url_for('user_posts'))
+      # return redirect(url_for('user_posts'))
       
 # login or redirect to create profilef
 @app.route('/login', methods=['GET', 'POST'])
@@ -74,6 +144,8 @@ def login():
       if found_user:
          session['id'] = found_user._id
          session['type'] = found_user.user_type
+         session['account_value'] = found_user.account_value
+         session['account_info'] = found_user.account_info
          
          return redirect(url_for('profile', username=session['username']))
       

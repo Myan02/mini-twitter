@@ -24,14 +24,16 @@ class profiles(db.Model):
 class posts(db.Model):
    _id = db.Column('id', db.Integer, primary_key=True)
    content = db.Column(db.Text, nullable=False)
-   post_type = db.column(db.String(50))
+   post_type = db.Column(db.String(50), nullable=False)
+   characters = db.Column('characters', db.Integer)
    time_posted = db.Column(db.String(64), nullable=True, default=datetime.now().strftime('%H:%M %B %d, %Y'))
    user_id = db.Column(db.Integer, db.ForeignKey('profiles.id'), nullable=False)
    
-   def __init__(self, user_id, content, post_type):
+   def __init__(self, user_id, content, post_type, characters):
       self.user_id = user_id
       self.content = content
       self.post_type = post_type
+      self.characters = characters
       
 class table_event():
    def delete_user(temp_username):
@@ -39,19 +41,24 @@ class table_event():
       db.session.commit()
    
    def return_posts(temp_id):
-      all_posts = posts.query.with_entities(posts.content, posts.time_posted).filter(posts.user_id == temp_id).all()
-         
-      
+      all_posts = posts.query.with_entities(posts.content, posts.time_posted, posts.post_type, posts.characters).filter(posts.user_id == temp_id).all()
+
       post_text = []
       post_time = []
+      post_type = []
+      post_chars = []
       for result in all_posts:
          content = result[0]
          time = result[1]
+         _type = result[2]
+         _chars = result[3]
          
          post_text.append(content)
          post_time.append(time)
+         post_type.append(_type)
+         post_chars.append(_chars)
       
-      return post_text, post_time
+      return post_text, post_time, post_type, post_chars
       
    
 
