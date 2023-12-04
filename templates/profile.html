@@ -1,48 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'user_base.html' %}
 
 {% block title %}
    <title>profile</title>
 {% endblock %}
 
-{% block css %}
-   <link rel="icon" href="cartoon_bird.jpg" type="image/x-icon">
-   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pfp.css') }} ">
-   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/posts.css') }} ">
-{% endblock %}
-
-{% block script %}
-   <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
-   <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
-{% endblock %}
-
-
-
-{% block main %}
-<main class="container">
-
-    <div class="sidebar">
-
-        <h2><img style = 'height: 50px; width: 50px; margin-right: 10px;' src="/static/images/bunny.png" alt="cartoon bird">mini-Twitter</h2>
-        <ul>
-            <li><a href="/home"><i class="fas fa-home"></i>Home</a></li>
-            <li><a href="/profile"><i class="fas fa-user"></i>Profile</a></li>
-            <li><a href="#"><i class="fas fa-address-card"></i>Trending</a></li>
-            <li><a href="#"><i class="fas fa-project-diagram"></i>Settings</a></li>
-            <!-- <li><button class="tweet_button button"><a href="/user_posts">Tweet</a></button></li> -->
-            <li><button class="logout_button button"><a href="/logout">logout</a></button></li>
-        </ul>
-        <div id="post_form">
-            <form action="" method="POST">
-                <div id="text_area">
-                    <textarea name="post" id="post" cols="40" rows="10"></textarea>
-                </div>
-                <br>
-                <div id="button_div">
-                    <input type="submit" value="Tweet" name="tweet_submit" id="post_button">
-                </div>
-            </form>
-         </div>
-    </div>
+{% block content %}
 
     <div class="content" style="background-color: white;">
         <div class="profile-box">
@@ -104,5 +66,5 @@
             {% endfor %}
         </div>
     </div>
-</main>
+
 {% endblock %}
