@@ -26,7 +26,7 @@ body {
   width: 100%;
   height: 100%;
   /* overflow: hidden; */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
 }
 
 ::-webkit-scrollbar{
@@ -170,6 +170,7 @@ body {
 }
 
 .content {
+  background-color: white;
   width: 80vw;
   height: 100vh;
   margin-left: 20vw;
@@ -197,6 +198,18 @@ body {
 
 a{
   text-decoration: none;
+}
+
+/* Home page content css */
+
+#home_header{
+  text-align: center;
+  padding: 20px;
+}
+
+#home_text{
+  font-size: 2em;
+  
 }
 
 

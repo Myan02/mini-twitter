@@ -47,111 +47,6 @@ def censor_text(text, censor_list, replacement='****'):
 def welcome(): 
     return render_template('welcome_page.html')
       
-# Home page, ready
-@app.route('/home', methods=['GET', 'POST'])
-def home():
-    
-   selected_post = request.args.get('selected_post', default=None, type=None)
-   
-   # Go to page, query posts table for all posts, display
-   if request.method == 'GET':
-         if 'username' in session:
-            all_post_ids, all_user_posts, all_post_times, all_post_like_number = table_event.return_posts(session['id'])
-            current_users_likes = likes.query.with_entities(likes.liked_post).filter(likes.current_user == session['id']).all()
-            
-            flat_list_of_likes = []
-            for row in current_users_likes:
-               flat_list_of_likes.extend(row)
-
-            # print(f'\n\n{flat_list_of_likes}\n\n')
-            # print(f'\n\n{all_post_ids}\n\n')
-            return render_template('home.html', 
-                                 len = len(all_user_posts), 
-                                 username=session['username'], 
-                                 post_id=all_post_ids, 
-                                 post=all_user_posts, 
-                                 time_posted=all_post_times,
-                                 users_likes=flat_list_of_likes,
-                                 users_number_of_likes=all_post_like_number
-                                 )
-         return redirect(url_for('login'))
-   
-   # grab info from post text area, set info in table
-   elif request.method == 'POST':
-      if 'like_button' in request.form:
-         is_liked = table_event.is_liked(selected_post)
-         user_post_liked = posts.query.filter(posts._id == selected_post).first()
-
-         if is_liked:
-            db.session.delete(is_liked)
-            user_post_liked.number_of_likes -= 1
-         else:
-            new_like = likes(session['id'], selected_post)
-            
-            db.session.add(new_like)
-            user_post_liked.number_of_likes += 1
-            
-         db.session.commit()
-         return redirect(url_for('home'))
-      
-
-# Allow users to make and look at their posts
-@app.route('/user_posts', methods=['GET', 'POST'])
-def user_posts():
-   
-   selected_post = request.args.get('selected_post', default=None, type=None)
-   
-   # Go to page, query posts table for all posts, display
-   if request.method == 'GET':
-         if 'username' in session:
-            all_post_ids, all_user_posts, all_post_times, all_post_like_number = table_event.return_posts(session['id'])
-            current_users_likes = likes.query.with_entities(likes.liked_post).filter(likes.current_user == session['id']).all()
-            
-            flat_list_of_likes = []
-            for row in current_users_likes:
-               flat_list_of_likes.extend(row)
-
-            # print(f'\n\n{flat_list_of_likes}\n\n')
-            # print(f'\n\n{all_post_ids}\n\n')
-            return render_template('user_posts.html', 
-                                 len = len(all_user_posts), 
-                                 username=session['username'], 
-                                 post_id=all_post_ids, 
-                                 post=all_user_posts, 
-                                 time_posted=all_post_times,
-                                 users_likes=flat_list_of_likes,
-                                 users_number_of_likes=all_post_like_number
-                                 )
-         return redirect(url_for('login'))
-   
-   # grab info from post text area, set info in table
-   elif request.method == 'POST':
-      if 'tweet_submit' in request.form:
-         new_post = request.form['post']
-         
-         censor_words = read_censored_words()
-         censored_content = censor_text(new_post, censor_words)
-         
-         db.session.add(posts(session['id'], censored_content))
-         db.session.commit()
-         
-         return redirect(url_for('user_posts'))
-      
-      elif 'like_button' in request.form:
-         is_liked = table_event.is_liked(selected_post)
-         user_post_liked = posts.query.filter(posts._id == selected_post).first()
-
-         if is_liked:
-            db.session.delete(is_liked)
-            user_post_liked.number_of_likes -= 1
-         else:
-            new_like = likes(session['id'], selected_post)
-            
-            db.session.add(new_like)
-            user_post_liked.number_of_likes += 1
-            
-         db.session.commit()
-         return redirect(url_for('user_posts'))
 
 # login or redirect to create profile
 @app.route('/login', methods=['GET', 'POST'])
@@ -244,6 +139,65 @@ def create_profile():
          return redirect(url_for('login'))
       
       return redirect(url_for('login'))
+   
+
+# Home page, ready
+@app.route('/home', methods=['GET', 'POST'])
+def home():
+    
+   selected_post = request.args.get('selected_post', default=None, type=None)
+   
+   # Go to page, query posts table for all posts, display
+   if request.method == 'GET':
+         if 'username' in session:
+            all_post_ids, all_user_posts, all_post_times, all_post_like_number = table_event.return_posts(session['id'])
+            current_users_likes = likes.query.with_entities(likes.liked_post).filter(likes.current_user == session['id']).all()
+            
+            flat_list_of_likes = []
+            for row in current_users_likes:
+               flat_list_of_likes.extend(row)
+
+            # print(f'\n\n{flat_list_of_likes}\n\n')
+            # print(f'\n\n{all_post_ids}\n\n')
+            return render_template('home.html', 
+                                 len = len(all_user_posts), 
+                                 username=session['username'], 
+                                 post_id=all_post_ids, 
+                                 post=all_user_posts, 
+                                 time_posted=all_post_times,
+                                 users_likes=flat_list_of_likes,
+                                 users_number_of_likes=all_post_like_number
+                                 )
+         return redirect(url_for('login'))
+   
+   # grab info from post text area, set info in table
+   elif request.method == 'POST':
+      if 'tweet_submit' in request.form:
+         new_post = request.form['post']
+         
+         censor_words = read_censored_words()
+         censored_content = censor_text(new_post, censor_words)
+         
+         db.session.add(posts(session['id'], censored_content))
+         db.session.commit()
+         
+         return redirect(url_for('home'))
+      
+      elif 'like_button' in request.form:
+         is_liked = table_event.is_liked(selected_post)
+         user_post_liked = posts.query.filter(posts._id == selected_post).first()
+
+         if is_liked:
+            db.session.delete(is_liked)
+            user_post_liked.number_of_likes -= 1
+         else:
+            new_like = likes(session['id'], selected_post)
+            
+            db.session.add(new_like)
+            user_post_liked.number_of_likes += 1
+            
+         db.session.commit()
+         return redirect(url_for('home'))
    
 # show profile if the user is logged in
 @app.route('/profile', methods=['GET', 'POST'])

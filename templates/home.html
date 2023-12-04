@@ -26,29 +26,46 @@
                 <li><a href="/profile"><i class="fas fa-user"></i>Profile</a></li>
                 <li><a href="#"><i class="fas fa-address-card"></i>Trending</a></li>
                 <li><a href="#"><i class="fas fa-project-diagram"></i>Settings</a></li>
-                <li><button class="tweet_button button"><a href="/user_posts">Tweet</a></button></li>
+                <!-- <li><button class="tweet_button button"><a href="/user_posts">Tweet</a></button></li> -->
                 <li><button class="logout_button button"><a href="/logout">logout</a></button></li>
             </ul>
+            <div id="post_form">
+                <form action="" method="POST">
+                    <div id="text_area">
+                        <textarea name="post" id="post" cols="40" rows="10"></textarea>
+                    </div>
+                    <br>
+                    <div id="button_div">
+                        <input type="submit" value="Tweet" name="tweet_submit" id="post_button">
+                    </div>
+                </form>
+             </div>
         </div>
-
-        <div class = "content" style = "background-color: white;">
-            <div style = "font-weight: bold; font-size: 20px; margin-top: 15px;">
-                <p>Home</p>
-                <hr>
+    
+        <div class = "content">
+            <div style = "font-weight: bold; font-size: 20px; margin-top: 15px;" id="home_header">
+                <p id="home_text">Home</p>
             </div>
 
+            <hr>
             <br>
-
-            <h2>POSTS:</h2><br>
-
+            
+            <h2>ALL POSTS:</h2><br>
+            
+            
             {% for i in range(len - 1, -1, -1) %}
-            <div class="posts" style="background-color: rgb(121, 203, 248);">
-                By: {{username}}
-                <br><br>
-                Post: {{post[i]}}
-                <br><br>
-                Time Posted: {{ time_posted[i] }}
-                <br><br>
+            <div class="posts" style="background-color: #1DA1F2; width: 35%;">
+                <span id="post_header">
+                    By: @{{username}}
+                    <i class="fas fa-star"></i>
+                    Time Posted: {{ time_posted[i] }}
+                </span>
+
+                <div id="main_post_content">
+                    <br><br>
+                    {{post[i]}}
+                    <br><br>
+                </div>
 
                 <form action="{{ url_for('home', selected_post=post_id[i]) }}" method="POST">
                     <input type="submit" value="like" id="like_button" name="like_button">
@@ -62,6 +79,7 @@
             </div>
             <br>
             {% endfor %}
+            
         </div>
     </main>
 

@@ -5,13 +5,14 @@
 }
 
 .posts{
-   text-align: center;
    margin: auto;
-   width: 50%;
    border: 5px solid black;
    padding: 20px;
-
    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+#post_header{
+   text-align: left;
 }
 
 #like_button{
@@ -22,3 +23,44 @@
    cursor: pointer;
    margin-right: 10px;
 }
+
+#main_post_content{
+   text-align: center;
+   font-size: 20px;
+   vertical-align: middle;
+   color: rgb(0, 0, 0);
+}
+
+#post_form{
+   text-align: center;
+   margin: 20px;
+}
+
+#post{
+   width: 100%;
+   height: 150px;
+   padding: 12px 20px;
+   box-sizing: border-box;
+   border: 2px solid #968a8a;
+   border-radius: 4px;
+   background-color: #f8f8f8;
+   font-size: 16px;
+   resize:unset;
+}
+
+#button_div{
+   text-align: right;
+}
+
+#post_button{
+   background-color: #1DA1F2;
+   border: 1.5px solid #1DA1F2;
+   padding: 5px 15px 5px 15px;
+   cursor: pointer;
+   font-size: 20px;
+   border-radius: 20px;
+   font-size: larger;
+   font-weight: bold;
+   color: white;
+}
+
