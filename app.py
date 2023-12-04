@@ -47,15 +47,15 @@ def payment():
 
          if decision == 'yes':
             if (session['account_value'] <= 0) or (session['account_value'] < session['amount_owed']):
-               last_post = posts.query.filter_by(_id = db.session.query(func.max(posts._id))).first()
-               if last_post:
-                  db.session.delete(last_post)
-                  db.session.commit()
-               flash('You do not have enough money!, Please refill account!')
+               flash('You do not have enough money! Please refill account!')
                return redirect(url_for('refill'))
             else:
                session['account_value'] = session['account_value'] - session['amount_owed']
                session['amount_owed'] = 0
+
+               new_object = posts(session['id'], content=session['new_post'], post_type=session['action'], characters=session['words'])
+               db.session.add(new_object)
+               db.session.commit()
 
             found_user = profiles.query.filter(profiles.username == session['username'], profiles.password == session['password']).first()
 
@@ -64,10 +64,6 @@ def payment():
                db.session.commit()
                return redirect(url_for('user_posts'))
          else:
-            last_post = posts.query.filter_by(_id = db.session.query(func.max(posts._id))).first()
-            if last_post:
-               db.session.delete(last_post)
-               db.session.commit()
             return redirect(url_for('user_posts'))
    return(render_template('payment.html', current_balance = session['account_value'], amount_owed = session['amount_owed']))
 
@@ -90,34 +86,53 @@ def user_posts():
    # grab info from post text area, set info in table
    else:
 
-      
+      # user types in their post 
       new_post = request.form['post']
+
+      # length of post 
       _chars = len(new_post.split())
 
+      #type of post it is (ad,job,regular)
       action = request.form['post_type']
 
+      # store the post information into a session
+      session['new_post'] = new_post
+      session['words'] = _chars
+      session['action'] = action
 
-      new_object = posts(session['id'], content=new_post, post_type=action, characters=_chars)
 
-      db.session.add(new_object)
-      db.session.commit()
-
-      if (session['type'] != 'CU') and (_chars > 20):
+      # If you are a TU/OU, write more than 20 words, and it is a regular post
+      if (session['type'] != 'CU') and (_chars > 20) and (session['action'] == 'regular'):
          amount_owed = (_chars-20)*0.1
          session['amount_owed'] = amount_owed
          return(redirect(url_for('payment')))
+      
+      # If you are a TU/OU, write less than 20 words, and it is a regular post
+      elif (session['type'] != 'CU') and (_chars < 20) and (session['action'] == 'regular'):
+         new_object = posts(session['id'], content=new_post, post_type=action, characters=_chars)
+         db.session.add(new_object)
+         db.session.commit()
+         return(redirect(url_for('user_posts')))
+      
+      # If you are a TU/OU, write more than 20 words, and it is a job or ad posting 
+      elif (session['type'] != 'CU') and (_chars > 20) and (session['action'] != 'regular'):
+         amount_owed = 10 + (_chars-20)*0.1
+         session['amount_owed'] = amount_owed
+         return(redirect(url_for('payment')))
+      
+      # If you are a TU/OU, write less than 20 words, and it is a job or ad posting
+      elif (session['type'] != 'CU') and (_chars < 20) and (session['action'] != 'regular'):
+         amount_owed = 10
+         session['amount_owed'] = amount_owed
+         return(redirect(url_for('payment')))
+
+      # If you are a corporate user 
       else:
          amount_owed = _chars
          session['amount_owed'] = amount_owed
          return (redirect(url_for('payment')))
-
-
-      # new_object = posts(session['id'], content=new_post, post_type=action, characters=_chars)
-      # db.session.add(new_object)
-      # db.session.commit()
       
-      # return redirect(url_for('user_posts'))
-      
+
 # login or redirect to create profilef
 @app.route('/login', methods=['GET', 'POST'])
 def login():

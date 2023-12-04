@@ -20,7 +20,7 @@
     <p> How much would you like to add to your account?</p>
     <form action="{{url_for('refill')}}" method="POST">
         <label for="amount">Amount: </label><br>
-        <input type="number" id="amount" name="amount" value="amount">
+        <input type="number" min="0" id="amount" name="amount" value="amount">
         <input type="submit" value="submit">
     </form>
 </main>
