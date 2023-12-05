@@ -2,6 +2,7 @@ from flask import Flask, render_template, url_for, redirect, request, session, f
 from flask_migrate import Migrate
 from werkzeug.utils import secure_filename
 from table_info import profiles, posts, likes, table_event
+from sqlalchemy import func
 from db import db
 import os
 
@@ -40,7 +41,7 @@ def censor_text(text, censor_list, replacement='****'):
 
    for word in censor_list:
       text = text.replace(word, replacement, -1)
-   return text
+   return text 
  
 # Welcome page READY!
 @app.route('/')# equals to url localhost:5000 or localhost:5000/ or http://127.0.0.1:5000
@@ -74,6 +75,8 @@ def login():
       if found_user:
          session['id'] = found_user._id
          session['type'] = found_user.user_type
+         session['account_value'] = found_user.account_value
+         session['account_info'] = found_user.account_info
          
          return redirect(url_for('profile', username=session['username']))
       
@@ -150,15 +153,13 @@ def home():
    # Go to page, query posts table for all posts, display
    if request.method == 'GET':
          if 'username' in session:
-            all_post_ids, all_user_posts, all_post_times, all_post_like_number = table_event.return_posts(session['id'])
+            all_post_ids, all_user_posts, all_post_types, all_posts_chars, all_post_times, all_post_like_number = table_event.return_posts(session['id'])
             current_users_likes = likes.query.with_entities(likes.liked_post).filter(likes.current_user == session['id']).all()
             
             flat_list_of_likes = []
             for row in current_users_likes:
                flat_list_of_likes.extend(row)
 
-            # print(f'\n\n{flat_list_of_likes}\n\n')
-            # print(f'\n\n{all_post_ids}\n\n')
             return render_template('home.html', 
                                  len = len(all_user_posts), 
                                  username=session['username'], 
@@ -166,7 +167,10 @@ def home():
                                  post=all_user_posts, 
                                  time_posted=all_post_times,
                                  users_likes=flat_list_of_likes,
-                                 users_number_of_likes=all_post_like_number
+                                 users_number_of_likes=all_post_like_number,
+                                 balance = session['account_value'],
+                                 _type = all_post_types,
+                                 _chars = all_posts_chars,
                                  )
          return redirect(url_for('login'))
    
@@ -208,7 +212,7 @@ def profile():
    # Go to page, query posts table for all posts, display
    if request.method == 'GET':
          if 'username' in session:
-            all_post_ids, all_user_posts, all_post_times, all_post_like_number = table_event.return_posts(session['id'])
+            all_post_ids, all_user_posts, all_post_types, all_posts_chars, all_post_times, all_post_like_number = table_event.return_posts(session['id'])
             current_users_likes = likes.query.with_entities(likes.liked_post).filter(likes.current_user == session['id']).all()
             
             flat_list_of_likes = []
@@ -223,9 +227,12 @@ def profile():
                                  username=session['username'], 
                                  post_id=all_post_ids, 
                                  post=all_user_posts, 
+                                 _type = all_post_types,
+                                 _chars = all_posts_chars,
                                  time_posted=all_post_times,
                                  users_likes=flat_list_of_likes,
                                  users_number_of_likes=all_post_like_number,
+                                 balance = session['account_value'],
                                  current_username=user.username,
                                  display_name=user.display_name,
                                  birthday=user.birthday,
@@ -246,10 +253,54 @@ def profile():
          censor_words = read_censored_words()
          censored_content = censor_text(new_post, censor_words)
          
-         db.session.add(posts(session['id'], censored_content))
-         db.session.commit()
+         # length of post 
+         _chars = len(censored_content.split())
          
-         return redirect(url_for('profile'))
+          #type of post it is (ad,job,regular)
+         action = request.form['post_type']
+         
+         # store the post information into a session
+         session['new_post'] = new_post
+         session['words'] = _chars
+         session['action'] = action
+         
+         
+         # If you are a TU/OU, write more than 20 words, and it is a regular post
+         if (session['type'] != 'CU') and (_chars > 20) and (session['action'] == 'regular'):
+            amount_owed = (_chars - 20) * 0.1
+            session['amount_owed'] = amount_owed
+            
+            return(redirect(url_for('payment')))
+      
+         # If you are a TU/OU, write less than 20 words, and it is a regular post
+         elif (session['type'] != 'CU') and (_chars < 20) and (session['action'] == 'regular'):
+            new_object = posts(session['id'], content=censored_content, post_type=action, characters=_chars)
+            
+            db.session.add(new_object)
+            db.session.commit()
+            
+            return(redirect(url_for('user_posts')))
+      
+         # If you are a TU/OU, write more than 20 words, and it is a job or ad posting 
+         elif (session['type'] != 'CU') and (_chars > 20) and (session['action'] != 'regular'):
+            amount_owed = 10 + (_chars - 20) * 0.1
+            session['amount_owed'] = amount_owed
+            
+            return(redirect(url_for('payment')))
+      
+         # If you are a TU/OU, write less than 20 words, and it is a job or ad posting
+         elif (session['type'] != 'CU') and (_chars < 20) and (session['action'] != 'regular'):
+            amount_owed = 10
+            session['amount_owed'] = amount_owed
+            
+            return(redirect(url_for('payment')))
+
+         # If you are a corporate user 
+         else:
+            amount_owed = _chars
+            session['amount_owed'] = amount_owed
+            
+            return (redirect(url_for('payment')))
       
       elif 'like_button' in request.form:
          is_liked = table_event.is_liked(selected_post)
@@ -308,13 +359,49 @@ def update_profile():
     # If 'username' is not in session, redirect to login
     return redirect(url_for('login'))
 
-# # show profile if the user is logged in
-# @app.route('/user')
-# def profile():
-#    if 'username' in session:
-#       return render_template('profile.html', current_username=session['username'])
-#    else:
-#       return redirect('login')
+@app.route('/refill', methods = ['GET', 'POST'])
+def refill():
+   if request.method == 'POST':
+
+      amount = request.form['amount']
+      session['account_value'] = session['account_value'] + int(amount)
+      found_user = profiles.query.filter(profiles.username == session['username'], profiles.password == session['password']).first()
+
+      if found_user:
+         found_user.account_value = session['account_value']
+         db.session.commit()
+      return redirect(url_for('profile'))
+
+   return render_template('refill_account.html', account_info = session['account_info'], account_balance = session['account_value'])
+
+@app.route('/payment', methods=['GET', 'POST'])
+def payment():
+   if request.method == 'POST':
+      
+         decision = request.form['choice']
+
+         if decision == 'yes':
+            if (session['account_value'] <= 0) or (session['account_value'] < session['amount_owed']):
+               flash('You do not have enough money! Please refill account!')
+               return redirect(url_for('refill'))
+            else:
+               session['account_value'] = session['account_value'] - session['amount_owed']
+               session['amount_owed'] = 0
+
+               new_object = posts(session['id'], content=session['new_post'], post_type=session['action'], characters=session['words'])
+               db.session.add(new_object)
+               db.session.commit()
+
+            found_user = profiles.query.filter(profiles.username == session['username'], profiles.password == session['password']).first()
+
+            if found_user:
+               found_user.account_value = session['account_value']
+               db.session.commit()
+               return redirect(url_for('profile'))
+         else:
+            return redirect(url_for('profile'))
+   return(render_template('payment.html', current_balance = session['account_value'], amount_owed = session['amount_owed']))
+
 
 # run app!
 if __name__ == '__main__':

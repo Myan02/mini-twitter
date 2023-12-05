@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}
+   <title>Payment page</title>
+{% endblock %}
+
+{% block css %}
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }} ">
+{% endblock %}
+
+{% block script %}
+   <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
+{% endblock %}
+
+
+{%block main%}
+<main>
+    <p> Debit Card on file: {{account_info}}</p>
+    <p> Current balance: {{account_balance}}</p>
+    <p> How much would you like to add to your account?</p>
+    <form action="{{url_for('refill')}}" method="POST">
+        <label for="amount">Amount: </label><br>
+        <input type="number" min="0" id="amount" name="amount" value="amount">
+        <input type="submit" value="submit">
+    </form>
+</main>
+{%endblock%}

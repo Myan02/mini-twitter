@@ -9,6 +9,7 @@
     <div class="content" style="background-color: white;">
         <div class="profile-box">
             <div class="main-header">
+
                 <div class="profile-header">
                     <img src="/static/uploads/default_background.png" alt="Background Picture">
                     <button id="edit-profile-button"><a href="{{ url_for('update_profile') }}">Edit Profile</a></button>
@@ -44,6 +45,10 @@
                         By: @{{username}}
                         <i class="fas fa-star"></i>
                         Time Posted: {{ time_posted[i] }}
+                        {%if _type[i] != 'regular'%}
+                            <i class="fas fa-star"></i>
+                            {{_type[i]}}
+                        {%endif%}
                     </span>
 
                     <div id="main_post_content">
