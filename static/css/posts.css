@@ -11,6 +11,12 @@
    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
+.radio-class{
+   text-align: left;
+   color: white;
+   font-size: large;
+}
+
 #post_header{
    text-align: left;
 }

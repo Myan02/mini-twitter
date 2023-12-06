@@ -26,13 +26,34 @@
              <li><button class="logout_button button"><a href="/logout">logout</a></button></li>
          </ul>
          <div id="post_form">
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for msg in messages %}
+                        <br>
+                            <div style="background-color: red; color: white; border-radius: 5px;">
+                                <p style="padding: 5px 10px;">{{msg}}</p>
+                            </div>
+                        <br>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
              <form action="" method="POST">
                  <div id="text_area">
                      <textarea name="post" id="post" cols="40" rows="10"></textarea>
                  </div>
                  <br>
-                 <div id="button_div">
-                     <input type="submit" value="Tweet" name="tweet_submit" id="post_button">
+                 <div class="radio-class">
+                    <form action="" method="POST">
+                        <input type="radio" id="AD" name="post_type" value="#ad">
+                        <label for="AD">Advertisement</label><br>
+                        <input type="radio" id="JOB" name="post_type" value="#job">
+                        <label for="JOB">Job</label><br>
+                        <input type="radio" id="regular" name="post_type" value="regular">
+                        <label for="NEITHER">Regular</label><br>
+                        <div id="button_div">
+                            <input type="submit" value="Tweet" name="tweet_submit" id="post_button">
+                        </div>
+                    </form>
                  </div>
              </form>
           </div>

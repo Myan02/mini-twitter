@@ -37,11 +37,15 @@
             </div>
 
             <br>
+            <hr>
+            <br><br>
 
             {% for i in range(len - 1, -1, -1) %}
                 <div class="posts" style="background-color: #1DA1F2; width: 30%;">
                     <span id="post_header">
                         By: @{{username}}
+                        <i class="fas fa-star"></i>
+                        {{ _type[i] }}
                         <i class="fas fa-star"></i>
                         Time Posted: {{ time_posted[i] }}
                     </span>

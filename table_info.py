@@ -14,7 +14,7 @@ class profiles(db.Model):
    background_picture = db.Column(db.String(255), default="default_background.png")
    post = db.relationship('posts', backref='profiles', lazy=True)
    
-   def __init__(self, username, password, display_name, birthday, user_type, account_info, account_value, profile_picture = None, background_picture = None):
+   def __init__(self, username, password, display_name, birthday, user_type, account_info, account_value, profile_picture, background_picture):
       self.username = username
       self.password = password
       self.display_name = display_name
@@ -23,20 +23,24 @@ class profiles(db.Model):
       self.account_info = account_info
       self.account_value = account_value
       self.profile_picture = profile_picture
-      self.background_picture = profile_picture
+      self.background_picture = background_picture
 
 class posts(db.Model):
    _id = db.Column('id', db.Integer, primary_key=True)
    content = db.Column(db.Text, nullable=False)
+   post_type = db.Column(db.String(50), nullable=False)
+   characters = db.Column('characters', db.Integer)
    time_posted = db.Column(db.String(64), nullable=True, default=datetime.now().strftime('%H:%M %B %d, %Y'))
    user_id = db.Column(db.Integer, db.ForeignKey('profiles.id'), nullable=False)
    number_of_likes = db.Column(db.Integer, default=0)
    
    likes = db.relationship('likes', backref='post', lazy=True)
    
-   def __init__(self, user_id, content):
+   def __init__(self, user_id, content, post_type, characters):
       self.user_id = user_id
       self.content = content
+      self.post_type = post_type
+      self.characters = characters
       
 
 class likes(db.Model):
@@ -67,24 +71,30 @@ class table_event():
       
    
    def return_posts(temp_id):
-      all_posts = posts.query.with_entities(posts._id, posts.content, posts.time_posted, posts.number_of_likes).filter(posts.user_id == temp_id).all()
+      all_posts = posts.query.with_entities(posts._id, posts.content, posts.time_posted, posts.number_of_likes, posts.post_type, posts.characters).filter(posts.user_id == temp_id).all()
          
       post_id = []   
       post_text = []
       post_time = []
       post_like_number = []
+      post_type = []
+      post_chars = []
       for result in all_posts:
          id = result[0]
          content = result[1]
          time = result[2]
          like_number = result[3]
+         _type = result[4]
+         _chars = result[5]
          
          post_id.append(id)
          post_text.append(content)
          post_time.append(time)
          post_like_number.append(like_number)
+         post_type.append(_type)
+         post_chars.append(_chars)
       
-      return post_id, post_text, post_time, post_like_number
+      return post_id, post_text, post_time, post_like_number, post_type, post_chars
       
    
 
