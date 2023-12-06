@@ -16,32 +16,31 @@
             
             <h2>ALL POSTS:</h2><br>
             
-            
-            {% for i in range(len - 1, -1, -1) %}
-            <div class="posts" style="background-color: #1DA1F2; width: 35%;">
-                <span id="post_header">
-                    By: @{{username}}
-                    <i class="fas fa-star"></i>
-                    Time Posted: {{ time_posted[i] }}
-                </span>
+            {% for post in posts_with_profiles|reverse %}
+                <div class="posts" style="background-color: #1DA1F2; width: 35%;">
+                    <span id="post_header">
+                        By: @{{post.username}}
+                        <i class="fas fa-star"></i>
+                        Time Posted: {{ post.time_posted }}
+                    </span>
+    
+                    <div id="main_post_content">
+                        <br><br>
+                        {{post.content}}
+                        <br><br>
+                    </div>
 
-                <div id="main_post_content">
-                    <br><br>
-                    {{post[i]}}
-                    <br><br>
+                    <form action="{{ url_for('home', selected_post=post.post_id) }}" method="POST">
+                        <input type="submit" value="like" id="like_button" name="like_button">
+                
+                        {% if post.post_id in users_likes %}
+                        <i class="fas fa-heart" style="color: rgb(247, 66, 66)" id="heart"></i>
+                            
+                        {% endif %}
+                        {{ post.likes }}
+                    </form>
                 </div>
-
-                <form action="{{ url_for('home', selected_post=post_id[i]) }}" method="POST">
-                    <input type="submit" value="like" id="like_button" name="like_button">
-            
-                    {% if post_id[i] in users_likes %}
-                    <i class="fas fa-heart" style="color: rgb(247, 66, 66)" id="heart"></i>
-                        
-                    {% endif %}
-                    {{ users_number_of_likes[i] }}
-                </form>
-            </div>
-            <br>
+                <br>
             {% endfor %}
         </div>
 

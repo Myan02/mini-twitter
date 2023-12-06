@@ -129,7 +129,7 @@ def create_profile():
                   return redirect(request.url)
          else:
             # No background picture file included, set a default background picture filename
-            background_picture_filename = 'default_background.jpg'
+            background_picture_filename = 'default_background.png'
 
             
          new_user = profiles(new_username, new_password, new_display_name, new_birthday, chosen_user_type, new_account_info, new_account_value)
@@ -156,9 +156,26 @@ def home():
             flat_list_of_likes = []
             for row in current_users_likes:
                flat_list_of_likes.extend(row)
-
-            # print(f'\n\n{flat_list_of_likes}\n\n')
-            # print(f'\n\n{all_post_ids}\n\n')
+            
+            # Joining posts and profiles tables
+            query = db.session.query(posts, profiles).join(profiles, posts.user_id == profiles._id)
+            
+             # Executing the query
+            all_posts = query.all()
+            
+            # Transforming the result into a list of dictionaries
+            posts_with_profiles = []
+            for post, profile in all_posts:
+               post_dict = {
+                     'post_id': post._id,
+                     'content': post.content,
+                     'time_posted': post.time_posted,
+                     'user_id': profile._id,
+                     'username': profile.username,
+                     'likes': post.number_of_likes
+               }
+               posts_with_profiles.append(post_dict)
+            
             return render_template('home.html', 
                                  len = len(all_user_posts), 
                                  username=session['username'], 
@@ -166,7 +183,8 @@ def home():
                                  post=all_user_posts, 
                                  time_posted=all_post_times,
                                  users_likes=flat_list_of_likes,
-                                 users_number_of_likes=all_post_like_number
+                                 users_number_of_likes=all_post_like_number,
+                                 posts_with_profiles=posts_with_profiles
                                  )
          return redirect(url_for('login'))
    
@@ -184,14 +202,18 @@ def home():
          return redirect(url_for('home'))
       
       elif 'like_button' in request.form:
-         is_liked = table_event.is_liked(selected_post)
-         user_post_liked = posts.query.filter(posts._id == selected_post).first()
+         
+         temp_user = session['id']
+         temp_post = selected_post
+
+         is_liked = table_event.is_liked(temp_user, temp_post)
+         user_post_liked = posts.query.filter(posts._id == temp_post).first()
 
          if is_liked:
             db.session.delete(is_liked)
             user_post_liked.number_of_likes -= 1
          else:
-            new_like = likes(session['id'], selected_post)
+            new_like = likes(temp_user, temp_post)
             
             db.session.add(new_like)
             user_post_liked.number_of_likes += 1
@@ -252,14 +274,18 @@ def profile():
          return redirect(url_for('profile'))
       
       elif 'like_button' in request.form:
-         is_liked = table_event.is_liked(selected_post)
-         user_post_liked = posts.query.filter(posts._id == selected_post).first()
+         
+         temp_user = session['id']
+         temp_post = selected_post
+
+         is_liked = table_event.is_liked(temp_user, temp_post)
+         user_post_liked = posts.query.filter(posts._id == temp_post).first()
 
          if is_liked:
             db.session.delete(is_liked)
             user_post_liked.number_of_likes -= 1
          else:
-            new_like = likes(session['id'], selected_post)
+            new_like = likes(temp_user, temp_post)
             
             db.session.add(new_like)
             user_post_liked.number_of_likes += 1
