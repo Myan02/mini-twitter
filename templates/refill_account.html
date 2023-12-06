@@ -1,0 +1,30 @@
+{% extends 'user_base.html' %}
+
+{% block title %}
+   <title>Refill page</title>
+{% endblock %}
+
+{% block css %}
+   <link rel="stylesheet" type="text/css" href="refill_account.css">
+{% endblock %}
+
+{% block script %}
+   <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
+{% endblock %}
+
+{%block main%}
+<body>
+
+   <div class="info">
+      <p> Debit Card on file: {{account_info}}</p><br>
+      <p> Current balance: {{account_balance}}</p><br>
+   </div>
+    <p> How much would you like to add to your account?</p><br>
+    <form action="{{url_for('refill')}}" method="POST">
+        <input type="number" min="0" max="200" id="amount" name="amount" value="amount">
+        <input type="submit" value="submit">
+    </form>
+
+</body>
+
+{%endblock%}
