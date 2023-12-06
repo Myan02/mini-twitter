@@ -13,6 +13,7 @@ body {
     scroll-behavior: smooth;
     text-align: center;
     margin-top: 150px;
+    font-size: 25px;
 }
 
 input[type=number] {
@@ -22,6 +23,11 @@ input[type=number] {
 }
 
 input[type=submit] {
-    border: 2px solid lightblue;
+    padding: 5px 15px;
+    background: rgb(30, 99, 202);
+    color: white;
+    border: 0 none;
+    cursor: pointer;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
 }
-
