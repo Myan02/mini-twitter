@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block css %}
-   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }} ">
+   <link rel="stylesheet" type="text/css" href="payment.css">
 {% endblock %}
 
 {% block script %}
@@ -15,19 +15,19 @@
 
 {%block main%}
 
-    <main>
-        <h1>Payment page</h1>
-            <p>Account balance: {{current_balance}}</p>
-            <p>Amount owed: {{amount_owed}}</p>
+    <body>
+        <h1>Payment page</h1><br>
+            <p>Account balance: {{current_balance}}</p><br>
+            <p>Amount owed: {{amount_owed}}</p><br>
 
-            <p>Please pay your balance!</p>
+            <p>Would you like to pay your balance?</p><br>
             <form action="{{url_for('payment')}}" method="POST">
-               <input type="radio" id="yes" name="choice" value="yes">
-               <label for="yes">Yes</label><br>
-               <input type="radio" id="no" name="choice" value="no">
-               <label for="no">No</label><br>
-               <input type="submit" value="submit">
+               <label><input type="radio" id="yes" name="choice" value="yes">
+               Yes</label><br>
+               <label><input type="radio" id="no" name="choice" value="no">
+               No</label><br>
+               <input type="submit" value="Submit">
             </form>
-    </main>
+    </body>
 
 {%endblock%}

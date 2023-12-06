@@ -47,7 +47,9 @@ def payment():
 
          if decision == 'yes':
             if (session['account_value'] <= 0) or (session['account_value'] < session['amount_owed']):
+
                flash('You do not have enough money! Please refill account!')
+               
                return redirect(url_for('refill'))
             else:
                session['account_value'] = session['account_value'] - session['amount_owed']

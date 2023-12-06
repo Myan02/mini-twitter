@@ -1,0 +1,33 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&family=Roboto:wght@300&display=swap'); */
+
+*{
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+body {
+    background-color: rgb(29 161 242);
+    color: white;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    scroll-behavior: smooth;
+    text-align: center;
+    margin-top: 150px;
+}
+
+input[type=number] {
+    border: 2px solid lightblue;
+    border-radius: 4px;
+    width: 10%
+}
+
+input[type=submit] {
+    padding: 5px 15px;
+    background: rgb(30, 99, 202);
+    color: white;
+    border: 0 none;
+    cursor: pointer;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
