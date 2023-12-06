@@ -1,0 +1,32 @@
+{% extends 'user_base.html' %}
+
+{% block title %}
+   <title>Payment page</title>
+{% endblock %}
+
+{% block css %}
+   <link rel="stylesheet" type="text/css" href="payment.css">
+{% endblock %}
+
+{% block script %}
+   <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
+{% endblock %}
+
+
+{%block main%}
+
+    <body>
+            <p>Account balance: {{current_balance}}</p><br>
+            <p>Amount owed: {{amount_owed}}</p><br>
+
+            <p>Would you like to pay your balance?</p><br>
+            <form action="{{url_for('payment')}}" method="POST">
+               <label><input type="radio" id="yes" name="choice" value="yes">
+               Yes</label><br>
+               <label><input type="radio" id="no" name="choice" value="no">
+               No</label><br>
+               <input type="submit" value="Submit">
+            </form>
+    </body>
+
+{%endblock%}
