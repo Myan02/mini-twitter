@@ -25,12 +25,16 @@
          {% endif %}
    {% endwith %}
    <main class="log_block">
-      <h2 style="text-align: center;">Login to Mini-Twitter</h2>
+      <h2 style="text-align: center; font-size: 30px; margin-top: 40px;">Login to Mini-Twitter!</h2>
       <div style="text-align:left; font-size: 2em; padding: 40px;">
          <div style="font-size: 15px; display: flex; align-items: center;">
             <h3>Don't have an account? </h3>
             <a style = "font-weight: bold; margin-left: 6px;" href="/create_profile">Sign up</a>
          </div>    
+         <div style = "font-size: 15px; display: flex; align-items: center; margin-top: 10px;">
+            <h3>Forgot your password? </h3>
+            <a style = "font-weight: bold; margin-left: 6px;" href="/reset_password">Reset password</a>
+         </div>
          <form action="" method="POST">
             <div>
                <label for="username">username: </label><br>
@@ -45,5 +49,6 @@
          </form>
       </div>
    </main>
+   
 </div>
 {% endblock %}

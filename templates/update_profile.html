@@ -9,24 +9,25 @@
 </head>
 
 <div class = "container">
-<body>
+    <main class="log_block">
     <header>
-        <h1 style="text-align: center;">Edit Profile</h1>
-        <hr>
+        <h1 style="text-align: center; margin-bottom: 30px;">Edit Profile</h1>
     </header>
 
     <form action="{{ url_for('update_profile') }}" method="POST" enctype="multipart/form-data">
-        <label for="profile_picture">Choose a new profile picture:</label>
+
+        <label style = "font-size: 20px;" for="profile_picture">Choose a new profile picture:</label>
         <input type="file" name="profile_picture" id="profile_picture" accept=".png, .jpg, .jpeg, .gif" style="margin-bottom: 20px"><br>
     
-        <!-- <label for="background_picture">Choose a new background picture:</label>
-        <input type="file" name="background_picture" id="background_picture" accept=".png, .jpg, .jpeg, .gif" style="margin-bottom: 20px"><br> -->
-    
-        <input class="button black_button" type="submit" value="Submit" style="color: black; background-color: aliceblue; font-size: 20px; margin-top: 20px;">
-    </form>
-    
-    
+        <label style = "font-size: 20px;" for="background_picture">Choose a new background picture:</label>
+        <input type="file" name="background_picture" id="background_picture" accept=".png, .jpg, .jpeg, .gif" style="margin-bottom: 20px"><br>
 
-</body>
+        <label style = "font-size: 20px;" for="bio_info">Bio:</label>
+        <textarea name="bio_info" id="bio_info" rows="4">{{ bio_info }}</textarea>
+    
+        <input style = "margin-bottom: 10px; margin-top: 20px;" class="update_button" type="submit" value="Done">
+    </form>
+    </main>
+    
 </div>
 </html>

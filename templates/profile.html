@@ -10,7 +10,7 @@
         <div class="profile-box">
             <div class="main-header">
                 <div class="profile-header">
-                    <img src="/static/uploads/default_background.png" alt="Background Picture">
+                    <img src="{{ url_for('static', filename='uploads/' + background_picture) }}" alt="Background Picture">
                     <button id="edit-profile-button"><a href="{{ url_for('update_profile') }}">Edit Profile</a></button>
                 </div>
 
@@ -21,9 +21,7 @@
                 <div class="profile-content">
                     <h2>{{ display_name }}</h2>
                     <span style = 'margin-bottom: 10px;'>@{{current_username}}</span>
-                    <p>Soccer | Madrid fan | Colombia</p>
-                    <p>Welcome to my page, where I talk about soccer, school, and all things life!</p>
-                    <p style = 'margin-top: 5px;'>320 <b>Following</b> &nbsp; 400 <b>Followers</b></p>
+                    <p>{{bio_info}}</p>
                 </div>
 
                 <div class="profile-navigation">

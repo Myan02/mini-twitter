@@ -12,9 +12,10 @@ class profiles(db.Model):
    account_value = db.Column(db.Integer)
    profile_picture = db.Column(db.String(255), default="default.jpg")
    background_picture = db.Column(db.String(255), default="default_background.png")
+   bio_info = db.Column(db.String(225), default = "bio")
    post = db.relationship('posts', backref='profiles', lazy=True)
    
-   def __init__(self, username, password, display_name, birthday, user_type, account_info, account_value, profile_picture, background_picture):
+   def __init__(self, username, password, display_name, birthday, user_type, account_info, account_value, profile_picture, background_picture, bio_info):
       self.username = username
       self.password = password
       self.display_name = display_name
@@ -24,6 +25,7 @@ class profiles(db.Model):
       self.account_value = account_value
       self.profile_picture = profile_picture
       self.background_picture = background_picture
+      self.bio_info = bio_info
 
 class posts(db.Model):
    _id = db.Column('id', db.Integer, primary_key=True)

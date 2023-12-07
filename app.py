@@ -28,11 +28,11 @@ def allowed_file(filename):
       filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def get_profile_picture_filename(user):
-   if user.profile_picture:
-      return user.profile_picture
-   else:
-      return 'default.jpg'
-   # return user.profile_picture if user.profile_picture else 'default.jpg'
+   return user.profile_picture if user.profile_picture else 'default.jpg'
+   
+def get_background_picture_filename(user):
+    return user.background_picture if user.background_picture else 'default_background.png'
+
 
 # Function to read censored words from a file
 def read_censored_words(filename='static/censored_words.txt'):
@@ -138,35 +138,24 @@ def create_profile():
          new_account_info = request.form['account_info']
          new_account_value = request.form['account_value']
          
-         if 'profile_picture' in request.files:
-            profile_picture = request.files['profile_picture']
-            profile_picture_filename = secure_filename(profile_picture.filename)
+         # Set default profile picture filename
+         profile_picture_filename = 'default_profile.jpg'
 
-            if profile_picture and allowed_file(profile_picture_filename):
-                  profile_picture.save(os.path.join(app.config['UPLOAD_FOLDER'], profile_picture_filename))
-            else:
-                  flash('Invalid profile picture file type. Allowed types are: png, jpg, jpeg, gif')
-                  return redirect(request.url)
-         else:
-            # No profile picture file included, set a default profile picture filename
-            profile_picture_filename = 'default.jpg'
-
-         # Check if background picture file is included in the request
-         if 'background_picture' in request.files:
-            background_picture = request.files['background_picture']
-            background_picture_filename = secure_filename(background_picture.filename)
-
-            if background_picture and allowed_file(background_picture_filename):
-                  background_picture.save(os.path.join(app.config['UPLOAD_FOLDER'], background_picture_filename))
-            else:
-                  flash('Invalid background picture file type. Allowed types are: png, jpg, jpeg, gif')
-                  return redirect(request.url)
-         else:
-            # No background picture file included, set a default background picture filename
-            background_picture_filename = 'default_background.png'
+         # Set default background picture filename
+         background_picture_filename = 'default_background.png'
 
             
-         new_user = profiles(new_username, new_password, new_display_name, new_birthday, chosen_user_type, new_account_info, new_account_value, profile_picture_filename, background_picture_filename)
+         new_user = profiles(new_username, 
+                             new_password, 
+                             new_display_name, 
+                             new_birthday, 
+                             chosen_user_type, 
+                             new_account_info, 
+                             new_account_value, 
+                             profile_picture_filename, 
+                             background_picture_filename,
+                             bio_info="Welcome to Mini-Twitter!"
+                             )
          db.session.add(new_user)
          db.session.commit()
       except:
@@ -316,6 +305,7 @@ def profile():
 
          user = profiles.query.filter_by(username=session['username']).first()
          profile_picture = get_profile_picture_filename(user)
+         background_picture = get_background_picture_filename(user)
          
          return render_template('profile.html', 
                               len = len(all_user_posts), 
@@ -334,7 +324,9 @@ def profile():
                               user_type=user.user_type,
                               account_info=user.account_info,
                               account_value=user.account_value,
-                              profile_picture=profile_picture
+                              profile_picture=profile_picture,
+                              background_picture=background_picture,
+                              bio_info=user.bio_info
                               )
       else:
          flash('User not found', 'error')
@@ -418,41 +410,79 @@ def profile():
 # Add a new route for updating the profile picture
 @app.route('/update_profile', methods=['GET', 'POST'])
 def update_profile():
-    if 'username' in session:
-        if request.method == 'GET':
-            return render_template('update_profile.html', username=session['username'])
-        elif request.method == 'POST':
-            # Handle profile picture update here
-            profile_picture = request.files['profile_picture']
-            # background_picture = request.files['background_picture']
+   if 'username' in session:
+      if request.method == 'GET':
+         return render_template('update_profile.html', username=session['username'])
+      elif request.method == 'POST':
+         # Handle profile picture, background picture, and bio information update here
+         profile_picture = request.files['profile_picture']
+         background_picture = request.files['background_picture']
 
-            # Check and save the profile picture
-            if profile_picture and allowed_file(profile_picture.filename):
-                profile_filename = secure_filename(profile_picture.filename)
-                profile_picture.save(os.path.join(app.config['UPLOAD_FOLDER'], profile_filename))
-            else:
-                flash('Invalid profile picture file type. Allowed types are: png, jpg, jpeg, gif')
-                return redirect(url_for('update_profile'))
+         # Check if the user clicked "Done" without making any updates
+         if not profile_picture and not background_picture and not request.form['bio_info']:
+            print("No changes were made")
+            flash('No Changes were made', 'warning')
+            return redirect(url_for('update_profile'))
 
-            # Check and save the background picture
-            # if background_picture and allowed_file(background_picture.filename):
-            #     background_filename = secure_filename(background_picture.filename)
-            #     background_picture.save(os.path.join(app.config['UPLOAD_FOLDER'], background_filename))
-            # else:
-            #     flash('Invalid background picture file type. Allowed types are: png, jpg, jpeg, gif')
-            #     return redirect(url_for('update_profile'))
+         # Check and save the profile picture
+         if profile_picture and allowed_file(profile_picture.filename):
+            profile_filename = secure_filename(profile_picture.filename)
+            profile_picture.save(os.path.join(app.config['UPLOAD_FOLDER'], profile_filename))
+         else:
+            profile_filename = None  # No new profile picture provided
 
-            # Update the user's profile and background pictures in the database
-            user = profiles.query.filter_by(username=session['username']).first()
+         # Check and save the background picture
+         if background_picture and allowed_file(background_picture.filename):
+            background_filename = secure_filename(background_picture.filename)
+            background_picture.save(os.path.join(app.config['UPLOAD_FOLDER'], background_filename))
+         else:
+            background_filename = None  # No new background picture provided
+
+         # Update the user's profile pictures and bio information in the database
+         user = profiles.query.filter_by(username=session['username']).first()
+
+         if profile_filename is not None:
             user.profile_picture = profile_filename
-            # user.background_picture = background_filename
+
+         if background_filename is not None:
+            user.background_picture = background_filename
+
+         # Update bio information only if provided
+         new_bio_info = request.form['bio_info']
+         if new_bio_info:
+            user.bio_info = new_bio_info
+
+         db.session.commit()
+         flash('Profile, background pictures, and bio updated successfully', 'success')
+         return redirect(url_for('profile', username=session['username']))
+
+   # If 'username' is not in session, redirect to login
+   return redirect(url_for('login'))
+
+
+# Add a new route for password reset
+@app.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'GET':
+        return render_template('reset_password.html')
+    elif request.method == 'POST':
+        username = request.form['username']
+        new_password = request.form['new_password']
+
+        # Check if the username exists
+        user = profiles.query.filter_by(username=username).first()
+
+        if user:
+            # Update the user's password
+            user.password = new_password
             db.session.commit()
 
-            flash('Profile and background pictures updated successfully', 'success')
-            return redirect(url_for('profile', username=session['username']))
+            flash('Password reset successfully', 'success')
+            return redirect(url_for('login'))
+        else:
+            flash('Username not found', 'error')
+            return redirect(url_for('reset_password'))
 
-    # If 'username' is not in session, redirect to login
-    return redirect(url_for('login'))
 
 
 @app.route('/refill', methods = ['GET', 'POST'])
