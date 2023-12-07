@@ -6,7 +6,7 @@
 
 {% block content %}
     
-        <div class = "content">
+        <div class = "content" style="width: 60vw;">
             <div style = "font-weight: bold; font-size: 20px; margin-top: 15px;" id="home_header">
                 <p id="home_text">Home</p>
             </div>
@@ -14,7 +14,7 @@
             <hr>
             <br>
             
-            <h2>ALL POSTS:</h2><br>
+            <h2 style = "margin-left: 10px;"> All Posts: </h2><br>
             
             {% for post in posts_with_profiles|reverse %}
                 <div class="posts" style="background-color: #1DA1F2; width: 35%;">
@@ -44,6 +44,13 @@
                 </div>
                 <br>
             {% endfor %}
+        </div>
+
+        <div class = "search">
+            <form style = "margin-left: 20px;" action="/search" method="get">
+                <input type="text" id="search" name="q" placeholder="Search">
+                <button type="submit"><i class="fas fa-search"></i></button>
+            </form>
         </div>
 
 {% endblock %}
