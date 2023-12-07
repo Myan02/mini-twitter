@@ -20,7 +20,11 @@
    {% with messages = get_flashed_messages() %}
       {% if messages %}
          {% for msg in messages %}
-            <p>{{msg}}</p>
+         <br>
+         <div style="background-color: red; color: white; border-radius: 5px;">
+             <p style="padding: 5px 10px;">{{msg}}</p>
+         </div>
+     <br>
          {% endfor %}
       {% endif %}
    {% endwith %}
@@ -34,31 +38,31 @@
          <br>
       <form action="" method="POST" enctype="multipart/form-data">
          <label style = "font-size: 25px;";for="create_username">Username: </label><br>
-         <input type="text" placeholder="Enter Username" name="create_username" id="create_username" style="border:none; font-size:20px; height:30px; width:300px; border-radius:5px; background-color: aliceblue; color:black; margin-bottom: 20px; padding: 15px"><br>
+         <input required type="text" placeholder="Enter Username" name="create_username" id="create_username" style="border:none; font-size:20px; height:30px; width:300px; border-radius:5px; background-color: aliceblue; color:black; margin-bottom: 20px; padding: 15px"><br>
          
          <label style = "font-size: 25px; " for="create_password">Password: </label><br>
-         <input type="text" placeholder="Enter Password" name="create_password" id="create_password" style="border:none; font-size:20px; height:30px; width:300px; border-radius:5px; background-color: aliceblue; color:black; margin-bottom: 20px; padding: 15px"><br>
+         <input required type="text" placeholder="Enter Password" name="create_password" id="create_password" style="border:none; font-size:20px; height:30px; width:300px; border-radius:5px; background-color: aliceblue; color:black; margin-bottom: 20px; padding: 15px"><br>
 
          <label style = "font-size: 25px;" for="display_name">Display name: </label><br>
-         <input type="text" placeholder="Enter Full Name" name="display_name" id="display_name" style="border:none; font-size:20px; height:30px; width:300px; border-radius:5px; background-color: aliceblue; color:black; margin-bottom: 20px; padding: 15px"><br>
+         <input required type="text" placeholder="Enter Full Name" name="display_name" id="display_name" style="border:none; font-size:20px; height:30px; width:300px; border-radius:5px; background-color: aliceblue; color:black; margin-bottom: 20px; padding: 15px"><br>
 
          <label style = "font-size: 25px;" for="birthday">Birthday: </label>
-         <input type="date" name="birthday" id="birthday" style="border:none; font-size:15px; height:30px; width:200px; border-radius:5px; background-color: aliceblue; color:black; margin-bottom: 20px; padding: 15px"><br>
+         <input required type="date" name="birthday" id="birthday" style="border:none; font-size:15px; height:30px; width:200px; border-radius:5px; background-color: aliceblue; color:black; margin-bottom: 20px; padding: 15px"><br>
 
          <input type="radio" name="user_type" id="SU" value="SU">
-         <label for="SU" style="font-size: 15px;">Super User</label><br>
+         <label required for="SU" style="font-size: 15px;">Super User</label><br>
 
          <input type="radio" name="user_type" id="CU" value="CU">
-         <label for="CU" style="font-size: 15px;">Corporate User</label><br>
+         <label required for="CU" style="font-size: 15px;">Corporate User</label><br>
 
          <input type="radio" name="user_type" id="OU" value="OU">
-         <label for="OU" style="font-size: 15px;">Ordinary User</label><br><br>
+         <label required for="OU" style="font-size: 15px;">Ordinary User</label><br><br>
 
          <label style = "font-size: 25px;" for="account_info">Account number: </label><br>
-         <input type="text" placeholder="Enter Account Number" name="account_info" id="account_info" style="border:none; font-size:10px; height:30px; width:300px; border-radius:5px; background-color: aliceblue; color:black; margin-bottom: 20px; padding: 15px"><br>
+         <input required type="text" placeholder="Enter Account Number" name="account_info" id="account_info" style="border:none; font-size:10px; height:30px; width:300px; border-radius:5px; background-color: aliceblue; color:black; margin-bottom: 20px; padding: 15px"><br>
 
          <label style = "font-size: 25px;" for="account_value">Account balance: </label><br>
-         <input type="text" placeholder="Enter Balance" name="account_value" id="account_value" style="border:none; font-size:10px; height:30px; width:300px; border-radius:5px; background-color: aliceblue; color:black; margin-bottom: 20px; padding: 15px"><br>
+         <input required type="text" placeholder="Enter Balance" name="account_value" id="account_value" style="border:none; font-size:10px; height:30px; width:300px; border-radius:5px; background-color: aliceblue; color:black; margin-bottom: 20px; padding: 15px"><br>
           
          <input class = "button black_button" type="submit" value="Sign Up" style="margin-top: 0px; width: 400px;">
       </form>

@@ -50,7 +50,7 @@ def censor_text(text, censor_list, replacement='****'):
 # Welcome page READY!
 @app.route('/')# equals to url localhost:5000 or localhost:5000/ or http://127.0.0.1:5000
 def welcome(): 
-    return render_template('welcome_page.html')
+    return redirect(url_for('surf'))
  
 @app.route('/surf', methods=['GET'])
 def surf():
@@ -101,16 +101,22 @@ def login():
       session['username'] = current_user
       session['password'] = current_password
       
-      found_user = profiles.query.filter(profiles.username == current_user, profiles.password == current_password).first()
+      found_user = profiles.query.filter(profiles.username == current_user).first()
       
       # If the user is found, log them in and set the id in the session
       if found_user:
-         session['id'] = found_user._id
-         session['type'] = found_user.user_type
-         session['account_value'] = found_user.account_value
-         session['account_info'] = found_user.account_info
-      
-         return redirect(url_for('profile', username=session['username']))
+         if found_user.password == current_password:
+            
+            session['id'] = found_user._id
+            session['type'] = found_user.user_type
+            session['account_value'] = found_user.account_value
+            session['account_info'] = found_user.account_info
+         
+            return redirect(url_for('profile', username=session['username']))
+         else:
+            session.clear()
+            flash('Incorrect password, please try again', 'error')
+            return redirect(url_for('login'))
       
       # if the user doesnt exist, redirect to create profile
       else:
@@ -144,7 +150,6 @@ def create_profile():
 
          # Set default background picture filename
          background_picture_filename = 'default_background.png'
-
             
          new_user = profiles(new_username, 
                              new_password, 
@@ -157,18 +162,24 @@ def create_profile():
                              background_picture_filename,
                              bio_info="Welcome to Mini-Twitter!"
                              )
+         
+         if profiles.query.with_entities(profiles.username).filter(new_user.username == profiles.username).first():
+            flash('That username is taken, try again', 'error')
+            return redirect(url_for('create_profile'))
+         
          db.session.add(new_user)
          db.session.commit()
       except:
-         return redirect(url_for('login'))
+         flash('Please Fill In All Sections', 'error')
+         return redirect(url_for('create_profile'))
       
       return redirect(url_for('login'))
    
-
+   
 # Home page, ready
 @app.route('/home', methods=['GET', 'POST'])
 def home():
-    
+
    selected_post = request.args.get('selected_post', default=None, type=None)
    
    # Go to page, query posts table for all posts, display
@@ -184,7 +195,7 @@ def home():
          # Joining posts and profiles tables
          query = db.session.query(posts, profiles).join(profiles, posts.user_id == profiles._id)
          
-            # Executing the query
+         # Executing the query
          all_posts = query.all()
          
          # Transforming the result into a list of dictionaries
@@ -551,9 +562,6 @@ def payment():
          else:
             return redirect(url_for('profile'))
    return(render_template('payment.html', current_balance = session['account_value'], amount_owed = session['amount_owed']))
-
-       
-
 
 # run app!
 if __name__ == '__main__':

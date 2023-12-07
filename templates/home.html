@@ -4,6 +4,13 @@
    <title>Profile</title>
 {% endblock %}
 
+
+{% block script %}
+   <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
+   <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
+{% endblock %}
+
+
 {% block content %}
     
         <div class = "content" style="width: 60vw;">
@@ -45,11 +52,12 @@
                 <br>
             {% endfor %}
         </div>
-
-        <div class = "search">
-            <form style = "margin-left: 20px;" action="/search" method="get">
-                <input type="text" id="search" name="q" placeholder="Search">
+        
+        <div class="search">
+            <form style="margin-left: 20px;" action="" method="POST">
+                <input type="text" id="search" name="query" placeholder="Search">
                 <button type="submit"><i class="fas fa-search"></i></button>
+                <br><br>
             </form>
         </div>
 

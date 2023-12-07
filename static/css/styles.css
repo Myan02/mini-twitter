@@ -2,8 +2,9 @@
    box-sizing: border-box;
    padding: 0;
    margin:0;
+   -ms-overflow-style: none;  /* IE and Edge */
+   scrollbar-width: none;  /* Firefox */
 }
-
 
 .container{
    background-color:  #1DA1F2;
@@ -262,4 +263,4 @@ a:hover{
    border-radius: 10px;
    margin: 10px;
  }
- 
+
