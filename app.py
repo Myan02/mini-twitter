@@ -51,6 +51,33 @@ def censor_text(text, censor_list, replacement='****'):
 @app.route('/')# equals to url localhost:5000 or localhost:5000/ or http://127.0.0.1:5000
 def welcome(): 
     return render_template('welcome_page.html')
+ 
+@app.route('/surf', methods=['GET'])
+def surf():
+   
+   # Go to page, query posts table for all posts, display
+   if request.method == 'GET':
+      
+      # Joining posts and profiles tables
+      query = db.session.query(posts, profiles).join(profiles, posts.user_id == profiles._id)
+      
+         # Executing the query
+      all_posts = query.all()
+      
+      # Transforming the result into a list of dictionaries
+      posts_with_profiles = []
+      for post, profile in all_posts:
+         post_dict = {
+            'post_id': post._id,
+            'content': post.content,
+            'time_posted': post.time_posted,
+            'user_id': profile._id,
+            'username': profile.username,
+            'likes': post.number_of_likes,
+            'type': post.post_type
+         }
+         posts_with_profiles.append(post_dict)
+      return render_template('surf.html', posts_with_profiles=posts_with_profiles)
       
 
 # login or redirect to create profile
