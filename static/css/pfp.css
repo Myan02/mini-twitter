@@ -70,7 +70,7 @@ body {
     flex-direction: column;
     justify-content: space-evenly;
     /* border: solid black 5px; */
-    padding-left: 5%;
+    padding-left: 70px;
 }
 
 .profile-picture {
@@ -218,7 +218,11 @@ a{
 
 #home_text{
   font-size: 2em;
-  
+}
+
+img {
+  max-width: 100%; /* Adjust this value as needed */
+  height: auto;
 }
 
 

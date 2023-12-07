@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 
 {% block css %}
-   <link rel="icon" href="cartoon_bird.jpg" type="image/x-icon">
    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/pfp.css') }} ">
    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/posts.css') }} ">
 {% endblock %}
@@ -16,13 +15,12 @@
 
    <main class = "container">    
       <div class="sidebar">
-         <h2><img style='height: 50px; width: 50px; margin-right: 10px;' src="/static/images/bunny.png" alt="cartoon bird">mini-Twitter</h2>
+         <h2><img style='height: 70px; width: 70px; margin-right: 10px; vertical-align: middle;' src="/static/images/logo.png" alt="gunther">mini-Twitter</h2>
          <ul>
              <li><a href="/home"><i class="fas fa-home"></i>Home</a></li>
              <li><a href="/profile"><i class="fas fa-user"></i>Profile</a></li>
              <li><a href="#"><i class="fas fa-address-card"></i>Trending</a></li>
              <li><a href="#"><i class="fas fa-project-diagram"></i>Settings</a></li>
-             <!-- <li><button class="tweet_button button"><a href="/user_posts">Tweet</a></button></li> -->
              <li><button class="logout_button button"><a href="/logout">logout</a></button></li>
          </ul>
          <div id="post_form">
@@ -37,7 +35,7 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-             <form action="" method="POST">
+             <form action="" method="POST" enctype="multipart/form-data">
                  <div id="text_area">
                      <textarea name="post" id="post" cols="40" rows="10"></textarea>
                  </div>
@@ -49,10 +47,12 @@
                         <input type="radio" id="JOB" name="post_type" value="#job">
                         <label for="JOB">Job</label><br>
                         <input type="radio" id="regular" name="post_type" value="regular">
-                        <label for="NEITHER">Regular</label><br>
+                        <label for="NEITHER">Regular</label><br><br>
+                        <input type="file" name="image" accept="image/*"><br>
                         <div id="button_div">
                             <input type="submit" value="Tweet" name="tweet_submit" id="post_button">
                         </div>
+                        
                     </form>
                  </div>
              </form>

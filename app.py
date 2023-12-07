@@ -88,7 +88,8 @@ def login():
    if request.method == 'GET':
       if 'username' in session:
          return redirect(url_for('profile', username=session['username']))
-      return render_template('login.html')
+      else:
+         return render_template('login.html')
    
    # take info from login form, set those as current session, query and check if this user account has been made
    else:
@@ -224,6 +225,16 @@ def home():
             censor_words = read_censored_words()
             censored_content = censor_text(new_post, censor_words)
             
+            if 'image' in request.files:
+               image = request.files['image']
+               if image.filename != '' and allowed_file(image.filename):
+                  # Save the image to the uploads folder
+                  filename = secure_filename(image.filename)
+                  image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+                  # Append image tag to the post content
+                  censored_content += f'<br><img src="{url_for("static", filename=f"uploads/{filename}")}" alt="Uploaded Image">'
+            
             _chars = len(censored_content.split())
 
             #type of post it is (ad,job,regular)
@@ -307,7 +318,7 @@ def profile():
          profile_picture = get_profile_picture_filename(user)
          background_picture = get_background_picture_filename(user)
          
-         return render_template('profile.html', 
+         return render_template('profile.html',
                               len = len(all_user_posts), 
                               username=session['username'], 
                               post_id=all_post_ids, 
@@ -340,6 +351,17 @@ def profile():
             
             censor_words = read_censored_words()
             censored_content = censor_text(new_post, censor_words)
+            
+            if 'image' in request.files:
+               image = request.files['image']
+               if image.filename != '' and allowed_file(image.filename):
+                  # Save the image to the uploads folder
+                  filename = secure_filename(image.filename)
+                  image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+
+                  # Append image tag to the post content
+                  censored_content += f'<br><img src="{url_for("static", filename=f"uploads/{filename}")}" alt="Uploaded Image">'
+            
             
             _chars = len(censored_content.split())
 
