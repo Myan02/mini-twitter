@@ -25,6 +25,7 @@
          <button class="wel_button button"><a href="/create_profile">Sign Up</a></button>
      </div>
 
+<<<<<<< HEAD
       <div class="post-header" style="background-color: #1DA1F2;">
          {% for post in posts_with_profiles|reverse %}
             <div class="posts" style="background-color: #ffffff; width: 35%;">
@@ -35,6 +36,19 @@
                   <i class="fas fa-star" style="background-color: #ffffff;"></i>
                   Time Posted: {{ post.time_posted }}
                </span>
+=======
+   <button id="edit-signup-button"><a href="/create_profile">Sign up</a></button>
+
+   {% for post in posts_with_profiles|reverse %}
+      <div class="posts" style="background-color: #1DA1F2; width: 35%;">
+         <span id="post_header" style="background-color: #1DA1F2;">
+            By: @{{post.username}}
+            <i class="fas fa-star" style="background-color: #1DA1F2;"></i>
+            {{post.type}}
+            <i class="fas fa-star" style="background-color: #1DA1F2;"></i>
+            Time Posted: {{ post.time_posted }}
+         </span>
+>>>>>>> 85d2d21113ae10a9926488bddd5c0ed6cde901bd
 
                <div id="main_post_content" style='background-color: #ffffff;'>
                   <br><br>
@@ -50,5 +64,6 @@
          {% endfor %}
       </div>
    </div>
+
 
 {% endblock %}

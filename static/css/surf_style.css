@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .main-page{
    overflow-x: hidden;
    -ms-overflow-style: none;  /* IE and Edge */
@@ -8,3 +9,30 @@
 .main-page::-webkit-scrollbar {
    display: none;
 }
+=======
+
+body {
+   background-color: #3773ce;
+}
+
+#edit-signup-button {
+   position: absolute;
+   top: 15px;
+   right: 100px;
+   background-color: black;
+   border-radius: 20px;
+   border: 1.5px solid white;
+   padding: 5px 20px;
+   font-size: large;
+   font-weight: bold;
+}
+
+#edit-signup-button:hover {
+ background-color: grey;
+}
+
+#edit-signup-button a {
+ text-decoration: none;
+ color: white;
+}
+>>>>>>> 85d2d21113ae10a9926488bddd5c0ed6cde901bd
