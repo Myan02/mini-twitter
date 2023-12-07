@@ -139,7 +139,7 @@ def create_profile():
          new_account_value = request.form['account_value']
          
          # Set default profile picture filename
-         profile_picture_filename = 'default_profile.jpg'
+         profile_picture_filename = 'default.jpg'
 
          # Set default background picture filename
          background_picture_filename = 'default_background.png'
