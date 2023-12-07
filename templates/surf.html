@@ -19,6 +19,8 @@
 
 {% block main %}
 
+   <button id="edit-signup-button"><a href="/create_profile">Sign up</a></button>
+
    {% for post in posts_with_profiles|reverse %}
       <div class="posts" style="background-color: #1DA1F2; width: 35%;">
          <span id="post_header" style="background-color: #1DA1F2;">
@@ -41,5 +43,6 @@
       </div>
       <br>
    {% endfor %}
+
 
 {% endblock %}
