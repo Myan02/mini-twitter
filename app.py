@@ -267,7 +267,7 @@ def home():
                new_object = posts(session['id'], content=censored_content, post_type=action, characters=_chars)
                db.session.add(new_object)
                db.session.commit()
-               return(redirect(url_for('profile')))
+               return(redirect(url_for('home')))
             
             # If you are a TU/OU, write more than 20 words, and it is a job or ad posting 
             elif (session['type'] != 'CU') and (_chars > 20) and (session['action'] != 'regular'):
@@ -563,6 +563,25 @@ def payment():
             session['amount_owed'] = 0
             return redirect(url_for('profile'))
    return(render_template('payment.html', current_balance = session['account_value'], amount_owed = session['amount_owed']))
+
+@app.route('/search', methods=['POST'])
+def search():
+    if request.method == 'POST':
+        query = request.form.get('query')
+        print("Search Query:", query)
+
+        # Query the database for posts containing the query (case-insensitive)
+        posts_result = posts.query.filter(posts.content.ilike(f"%{query}%")).all()
+
+        print("Number of Posts Found:", len(posts_result))
+
+        if posts_result:
+            return render_template('home.html', posts=posts_result, query=query)
+        else:
+            flash('No posts found for the query', 'error')
+            return redirect(url_for('home'))
+
+    return redirect(url_for('home'))
 
 # run app!
 if __name__ == '__main__':
