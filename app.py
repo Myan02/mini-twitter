@@ -12,7 +12,7 @@ from datetime import timedelta, datetime
 app = Flask(__name__)
 
 app.secret_key = 'key'
-app.permanent_session_lifetime = timedelta(minutes=5)
+app.permanent_session_lifetime = timedelta(minutes=60)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.sqlite3'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -144,7 +144,7 @@ def create_profile():
          chosen_user_type = request.form['user_type']
          new_account_info = request.form['account_info']
          new_account_value = request.form['account_value']
-         
+
          # Set default profile picture filename
          profile_picture_filename = 'default.jpg'
 
@@ -170,7 +170,7 @@ def create_profile():
          db.session.add(new_user)
          db.session.commit()
       except:
-         flash('Please Fill In All Sections', 'error')
+         flash('That account number exists, try again', 'error')
          return redirect(url_for('create_profile'))
       
       return redirect(url_for('login'))
@@ -351,7 +351,7 @@ def profile():
                               bio_info=user.bio_info
                               )
       else:
-         flash('User not found', 'error')
+         flash('You have been logged out', 'error')
          return redirect('login')
    
    # grab info from post text area, set info in table
@@ -437,6 +437,35 @@ def profile():
             
          db.session.commit()
          return redirect(url_for('profile'))
+      
+@app.route('/trending', methods=['GET'])
+def trending():
+   # Go to page, query posts table for all posts, display
+   if request.method == 'GET':
+      
+      # Joining posts and profiles tables
+      query = db.session.query(posts, profiles).join(profiles, posts.user_id == profiles._id)
+      
+         # Executing the query
+      all_posts = query.all()
+      
+      # Transforming the result into a list of dictionaries
+      posts_with_profiles = []
+      for post, profile in all_posts:
+         if post.number_of_likes >= 3:
+            post_dict = {
+               'post_id': post._id,
+               'content': post.content,
+               'time_posted': post.time_posted,
+               'user_id': profile._id,
+               'username': profile.username,
+               'likes': post.number_of_likes,
+               'type': post.post_type
+            }
+            posts_with_profiles.append(post_dict)
+      return render_template('trending.html', posts_with_profiles=posts_with_profiles)
+      
+
    
    
 

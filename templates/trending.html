@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}
+   <title>Trends</title>
+{% endblock %}
+
+{% block css %}
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/trends.css') }} ">
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/surf_style.css') }} ">
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }} ">
+   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/posts.css') }} ">
+{% endblock %}
+
+{% block script %}
+   <script src="{{ url_for('static', filename='scripts/scripts.js') }}"></script>
+   <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
+{% endblock %}
+
+
+
+{% block main %}
+   <div class="main-page">
+
+      <div class="trending-header">
+         <h1>Current Trends</h1>
+      </div>
+
+      <div class="post-header" style="background-color: #1DA1F2;">   
+         {% for post in posts_with_profiles|reverse %}
+            <div class="posts" style="background-color: #fdfdfd; width: 35%;">
+               <span id="post_header" style="background-color: #ffffff;">
+                  By: @{{post.username}}
+                  <i class="fas fa-star" style="background-color: #ffffff;"></i>
+                  {{post.type}}
+                  <i class="fas fa-star" style="background-color: #ffffff;"></i>
+                  Time Posted: {{ post.time_posted }}
+               </span>
+
+               <div id="main_post_content" style='background-color: #ffffff;'>
+                  <br><br>
+                  {{post.content | safe}}
+                  <br><br>
+               </div>
+
+               <i class="fas fa-heart" style="color: rgb(247, 66, 66); background-color: #ffffff;" id="heart"></i>   
+               {{ post.likes }}
+               </form>
+            </div>
+            <br>
+         {% endfor %}
+      </div>
+   </div>
+
+
+{% endblock %}
