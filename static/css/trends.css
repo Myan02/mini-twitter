@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&family=Roboto:wght@300&display=swap');
+
+*{
+   background-color: #1DA1F2;  /* Previous color #1DA1F2 */
+   font-family: 'Roboto', sans-serif;
+   scroll-behavior: smooth;
+   margin: 0;
+}
+
+
+.trending-header{
+   height: 15vh;
+   vertical-align: middle;
+   text-align: center;
+   display: flex; 
+   justify-content: center; 
+   align-items: center; 
+   border: 2px solid black; 
+   color: white;
+   font-size: 35px;
+   margin-bottom: 20px;
+}
