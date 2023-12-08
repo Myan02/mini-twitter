@@ -1,3 +1,6 @@
+# Main Mini Twitter Application File
+# Made by Michael Baburyan, Andres Rodriguez, Massiel Ortiz, Nathalie Thornhill, Sajed Atwa
+
 from flask import Flask, render_template, url_for, redirect, request, session, flash, jsonify
 from flask_migrate import Migrate
 from sqlalchemy import func
