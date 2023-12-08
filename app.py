@@ -589,6 +589,7 @@ def payment():
                db.session.commit()
                return redirect(url_for('profile'))
          else:
+            session['amount_owed'] = 0
             return redirect(url_for('profile'))
    return(render_template('payment.html', current_balance = session['account_value'], amount_owed = session['amount_owed']))
 
